@@ -41,8 +41,8 @@
 
 ### Task 3: Initialize and publish the private repository
 
-- [ ] Initialize Git with branch `main`.
-- [ ] Verify no ignored data or local path file is staged.
-- [ ] Create the first commit.
-- [ ] Create the GitHub repository `maize-model-research` as private.
-- [ ] Push `main` and verify remote visibility.
+- [x] Initialize Git with branch `main`.
+- [x] Verify no ignored data or local path file is staged.
+- [x] Create the first commit.
+- [x] Create the GitHub repository `maize-model-research` as private.
+- [x] Push `main` and verify remote visibility.
