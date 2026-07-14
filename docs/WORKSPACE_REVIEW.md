@@ -23,8 +23,8 @@ D:\cj_swcc\maize-peacenet-agent-handoff
 | `_external\Exact` | Exact 上游参考树，且已有本地修改。 |
 | `_external\TimeMIL` | TimeMIL 复现与 WPE 概念参考树，且已有兼容补丁。 |
 | `_external\PEACE-Net` | PEACE-Net 参考实现。 |
-| `biaozhu` | 名称显示为标注资产，未逐文件核验前不得删除。 |
 | `maize_workspace_inventory` | 数据完整性和可训练样本库存来源。 |
+| `research-notes` | 已建立的 Obsidian 总索引与模板库，应保留并链接各项目仓库。 |
 
 ## 建议迁移或整合后归档
 
@@ -35,18 +35,20 @@ D:\cj_swcc\maize-peacenet-agent-handoff
 | `sam_report_selected_figures*`、`usa_bad_case_previews`、根目录 PNG | 若属于正式图件，迁移到 `E:\maize_paper_workspace\09_figures` 的明确子目录；否则作为可再生产物候选清理。 |
 | `france_sam_tmp_verify` | 核验是否已有正式结果副本；若只是临时验证目录，可作为候选清理。 |
 | `.vscode` | 若只包含个人编辑器设置，保留本地或并入具体项目，不应作为科研资产。 |
+| `Exact` | 不是第二个源码仓库，而是早期 PASTIS24 demo 启动脚本、配置和数据准备工具；保留为复现记录，后续归档。 |
 
 ## 高概率可清理，但仍需确认
 
 | 内容 | 条件 |
 | --- | --- |
 | `__pycache__` | 可由 Python 自动重建。 |
+| `biaozhu\sam_vit_h.pth` | 与 `E:\maize_paper_workspace\06_models\foundation_models\sam\sam_vit_h.pth` 的 SHA-256 均为 `A7BF3B02F3EBF1267ABA913FF637D9A2D5C33D3173BB679E46D9F338C26F262E`；确认 E 盘备份策略后可删除 D 盘重复副本。 |
 | 已确认复制到 `E:` 且 SHA256 相同的根目录图片/脚本副本 | 必须先输出逐文件哈希对照。 |
 | 旧 dry-run 清单 | 仅在对应 apply 清单、迁移日志和最终库存都完整时归档或清理。 |
 
 ## 当前禁止直接删除
 
 - `delete_d_copied_after_migration.ps1` 及迁移 manifest：名称不能证明迁移已经完整成功，它们也是审计线索。
-- `D:\cj_swcc\Exact`：可能是 `_external\Exact` 的另一工作树或历史副本，需比较 Git remote、commit、dirty files 和唯一文件后再决定。
+- `D:\cj_swcc\Exact`：内容虽已确认是 demo 包装而非源码仓库，但在将其运行说明归档前不要删除。
 - 三个 handoff：主仓库首次提交后仍需做逐文件覆盖检查。
 - 所有用户标注、正式评价结果和不能重新生成的人工审查图件。
