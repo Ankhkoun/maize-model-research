@@ -1,0 +1,36 @@
+# Local machine configuration
+configs/paths.local.yaml
+.env
+.env.*
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Data and generated outputs
+/data/
+/datasets/
+/outputs/
+/checkpoints/
+/runs/
+/wandb/
+*.pt
+*.pth
+*.ckpt
+*.npy
+*.npz
+*.tif
+*.tiff

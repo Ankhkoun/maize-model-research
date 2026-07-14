@@ -1,0 +1,3 @@
+# Copy to paths.local.yaml and set the root for the current machine.
+# paths.local.yaml is intentionally ignored by Git.
+workspace_root: "/path/to/maize_paper_workspace"
