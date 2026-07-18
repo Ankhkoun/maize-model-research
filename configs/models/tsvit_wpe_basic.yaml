@@ -1,0 +1,56 @@
+experiment:
+  id: E1
+  name: tsvit_doy_learnable_wpe
+  seed: 42
+  status: not_run
+
+model:
+  image_size: 24
+  patch_size: 2
+  num_frames: 26
+  num_channels: 10
+  num_classes: 2
+  dim: 128
+  temporal_depth: 4
+  spatial_depth: 4
+  heads: 4
+  mlp_ratio: 4.0
+  dropout: 0.0
+  emb_dropout: 0.0
+  wavelet:
+    enabled: true
+    scale_init_days: [7.0, 17.5, 35.0]
+    scale_min_days: 3.5
+    scale_max_days: 35.0
+    shift_init_days: [0.0, 0.0, 0.0]
+    shift_max_abs_days: 7.0
+    support_radius_days: 42.0
+    alpha_init: 0.01
+    eps: 1.0e-6
+data:
+  window_size: 24
+  stride: 24
+  ignore_index: 255
+
+training:
+  max_epochs: 100
+  effective_batch_size: 16
+  physical_batch_candidates: [16, 8, 4, 2]
+  optimizer: AdamW
+  weight_decay: 0.0
+  start_lr: 1.0e-8
+  base_lr: 1.0e-3
+  min_lr: 5.0e-6
+  warmup_epochs: 10
+  early_stopping_patience: 12
+  amp: true
+  amp_init_scale: 8192.0
+  amp_backoff_factor: 0.5
+  amp_min_scale: 128.0
+  amp_max_backoffs_per_batch: 6
+  amp_growth_interval: 1000000
+
+evaluation:
+  selection_metric: maize_iou
+  validation_every_epochs: 1
+  test_during_training: false
