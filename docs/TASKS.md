@@ -1,6 +1,6 @@
 # Tasks
 
-更新时间：2026-07-18。仅勾选有验证证据的工作；E0/E1 正式 Train/Validation 实验均 completed。
+更新时间：2026-07-19。仅勾选有验证证据的工作；E0/E1 正式 Train/Validation 与一次性 Test 评价均 completed。
 
 ## P0：数据与实验启动核验
 
@@ -46,11 +46,23 @@
 - [x] 以 TDD 实现可审计的 AMP 同批降 scale 重试并冻结 E1 训练策略。
 - [x] 在完全相同数据、主体模型、seed 和训练计划下运行正式 E1；epoch 22 正常早停，并独立重放 epoch 8 `best.pt` 的完整 Validation。
 - [x] E0/E1 训练与 checkpoint 选择只依据 Validation；两次正式训练和独立重放均未读取 Test。
-- [ ] 方案冻结后只评价 Test 一次；不得依据 Test 反向选择模型、阈值或 checkpoint。
+- [x] 方案冻结后使用固定 epoch 13/8 best.pt 各评价 Test 一次；未依据 Test 反向选择模型、阈值或 checkpoint。
 - [x] 登记 DATA-AUDIT-2021 与正式 E0 的 commit、配置、数据版本、seed、命令、输出、checkpoint、指标和异常。
 - [ ] 超参数冻结后，评估是否用 Train+Validation 共 771 张影像进行最终重训练。
 
 ## P4：文档与发布
 
 - [x] 创建 2026-07-16 中间检查点，明确正式实验未完成。
+- [x] 以 TDD 实现严格 Test-only 入口，并在正式 Test 前通过 fresh 全量 pytest 与真实 CUDA smoke。
+- [x] 登记 E0/E1 Test 指标、混淆矩阵、Validation/Test 差值、checkpoint/输出 SHA256 和伪标签一致性解释。
+- [x] 更新正式工作区实验说明与总 handoff，刷新 825519 文件库存并抽查 5 个新增文件。
 - [ ] 用户单独确认后再 stage/commit/push；当前不得自动发布。
+
+## 2026-07-19：独立真实标签 Test 收尾
+
+- [x] 核对迁移后的独立30m标签路径、85x85 标签契约和 Test 305 条的一一映射。
+- [x] 在全体 `label !=255` 像元上实现原生30m与标签复制模型网格两套冻结 Test 指标；不用耕地掩膜、排除列表或阈值搜索。
+- [x] 对 E0/E1 各执行一次完整真实标签 Test；记录两种尺度的 loss、完整混淆矩阵、OA/precision/recall/F1/IoU/mIoU/Kappa/area ratio、哈希和差值。
+- [x] 保留先前伪标签 Test 为诊断，并将独立30m参考标签结果标记为最终 held-out reference 报告。
+- [ ] 用户审核后自行 stage/commit/push；当前不得自动发布。
+- [x] 独立真实标签 Test 收尾后 fresh 全量 pytest（92 passed）、compileall、git diff --check 与未跟踪文件 whitespace 检查。

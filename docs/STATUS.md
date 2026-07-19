@@ -1,7 +1,7 @@
 # Current Status
 
-更新时间：2026-07-18
-检查点类型：E0/E1 正式训练与独立 Validation 重放均已完成。
+更新时间：2026-07-19
+检查点类型：E0/E1 冻结 Train/Validation 与一次性 Test 评价均已完成。
 
 ## 项目目标
 
@@ -64,27 +64,44 @@
 
 - 正式 E0/E1 配置已改为 `24x24` 窗口、内部 patch 2；工程旧 `256/patch8` 不再作为现行规范。
 - DOY 已改为共享 `nn.Embedding(367,D)`，0 为 padding、1..366 为日历日。
-- 相对路径 manifest、严格 Dataset、Train-only 归一化、窗口/拼接、指标、AMP 同批重试、checkpoint/resume 和 E0/E1 CLI 已实现并通过 71 项测试。
+- 相对路径 manifest、严格 Dataset、Train-only 归一化、窗口/拼接、指标、AMP 同批重试、checkpoint/resume、E0/E1 CLI 和 Test-only CLI 已实现；正式 Test 前 fresh 全量测试为 81 项。
 - E0 正式训练：completed；epoch 25 因 warmup 后连续 12 个 epoch 无提升正常早停，best 为 epoch 13。独立完整 Validation 重放逐项一致：maize IoU=0.938347、F1=0.968193、Kappa=0.923977，混淆矩阵 `[[4625760,251520],[176506,6514516]]`。
 - E1 正式训练：completed；epoch 22 因 warmup 后连续 12 个 epoch 无提升正常早停，best 为 epoch 8。独立新进程完整 Validation 重放逐项一致：maize IoU=0.933572、F1=0.965645、Kappa=0.919046，混淆矩阵 `[[4680450,196830],[260718,6430304]]`。
 - E1 训练共发生 4 次可审计 AMP 同批 backoff，均定位于 `wavelet.alpha` 的非有限梯度；loss scale 依次为 `8192→4096→2048→1024→512`。每次重试后的 epoch 均完成 3327 个 optimizer steps，没有跳过 effective batch。
 - 受控 Validation 对比中，E1 maize IoU 比 E0 低 0.004776，F1 低 0.002548，Kappa 低 0.004930；首轮结果不支持“WPE 提升 E0”的假设，当前保留 E0 为这组对照中的最佳模型。
+- 已以 TDD 实现独立、严格的 Test-only 入口：默认 evaluator 仍为 Validation-only；只有显式 `expected_split="test"` 的独立 CLI 才能加载 Test，并严格核验 305 records、冻结 checkpoint/epoch/SHA256、manifest 和 normalization。
+- 正式 Test 前 fresh pytest 为 `81 passed in 8.58s`；真实 CUDA smoke 使用 physical/effective batch 16/16、checkpoint 精确重载，且 `test_records_loaded=0`。
+- E0 冻结 Test 一次性评价：305 tiles、12295425 supervised pixels；loss=0.123839、OA=0.951711、precision=0.968469、recall=0.956387、F1=0.962390、maize IoU=0.927507、mIoU=0.900577、Kappa=0.894961、area ratio=0.987525；混淆矩阵 `[[4105268,247320],[346410,7596427]]`。
+- E1 冻结 Test 一次性评价：305 tiles、12295425 supervised pixels；loss=0.127737、OA=0.948240、precision=0.976072、recall=0.942992、F1=0.959247、maize IoU=0.921686、mIoU=0.894624、Kappa=0.888390、area ratio=0.966109；混淆矩阵 `[[4168976,183612],[452803,7490034]]`。
+- E1-E0 的 Test maize IoU/F1/Kappa 差值为 `-0.005821/-0.003143/-0.006571`；既有 Validation 差值为 `-0.004776/-0.002548/-0.004930`。Test 未用于任何反向选择，且结果未改变基于 Validation 保留 E0 的结论。
 - 没有为这 1076 个 Xinjiang 2021 样本找到一一对应的独立人工/年度参考标签；当前 Test 只能报告空间留出伪标签一致性，不能表述为独立地面真值精度。
 
 ## 环境与仓库
 
 - 环境：`D:\Anaconda3\envs\cawa\python.exe`
 - Python 3.11.14；PyTorch 2.10.0+cu128；CUDA 可用；GPU 为 NVIDIA GeForce RTX 5060 Ti。
-- 分支：`experiment/e0-tsvit-xinjiang-2021`
-- HEAD：`b0a3463b1cbf506402b6d7b3034b53c7e2116240`
-- 工作树包含本阶段尚未提交的模型、测试、设计文档和分布图。
+- 分支：`codex/e0-e1-test-evaluation`
+- HEAD：`d00e53d6cb3fb0eb8ccfdddd6c98757c2cb3a198`（本阶段基础提交；尚未新增 commit）。
+- 工作树包含本阶段尚未提交的 Test-only 代码、测试、设计/计划、实验记录和 handoff；未 stage、commit、push 或创建 PR。
 - 未修改 `D:\cj_swcc\_external\Exact` 或 `D:\cj_swcc\_external\TimeMIL`。
-- 正式 E0 输出已冻结在 `E:\maize_paper_workspace\06_models\retrain_outputs\maize_model_research\e0_tsvit_doy_seed42`；best.pt SHA256 为 `CAB74C64897DA7FEA8A1A458ED94DAC2E23C0054A1772EAF16CF7BB5C3F9DE86`。
-- 正式工作区库存已按固定流程刷新：825514 个文件、359.189696 GB；E1 实验说明、`best.pt`、AMP 审计和独立 Validation 重放均已抽查入清单。
-- 正式 E1 输出：`E:\maize_paper_workspace\06_models\retrain_outputs\maize_model_research\e1_tsvit_doy_wpe_seed42`。
+- 正式 E0 输出已冻结在 `E:\maize_paper_workspace\06_models\retrain_outputs\maize_model_research\e0_tsvit_doy_seed42`；best.pt SHA256 为 `CAB74C64897DA7FEA8A1A458ED94DAC2E23C0054A1772EAF16CF7BB5C3F9DE86`；Test 结果位于其 `test_evaluation` 子目录。
+- 正式工作区库存已按固定流程刷新：825519 个文件、359.18971 GB；E0/E1 两组 Test JSON/run snapshot、新实验说明和总 handoff 均已抽查入清单。
+- 正式 E1 输出：`E:\maize_paper_workspace\06_models\retrain_outputs\maize_model_research\e1_tsvit_doy_wpe_seed42`；Test 结果位于其 `test_evaluation` 子目录。
 
 ## 下一项有界任务
 
-1. 用户审阅 E0/E1 Validation 对比与负结果结论，决定是否冻结 E0 为当前主模型并授权一次性 Test 评价或 Train+Validation 最终重训练。
-2. 用户自行整理实验分支、提交并创建 PR；本检查点只提供准确文件清单与提交说明，不 stage/commit/push。
-3. 在用户明确冻结方案前不读取 Test，也不依据 Test 反向选择模型、阈值或 checkpoint。
+1. 完成正式工作区实验说明、总 handoff、库存刷新与抽查，并 fresh 运行全量测试、compileall 和 git diff --check。
+2. 用户审阅一次性 Test 结果与文件清单后，自行 stage/commit/push 和创建 PR。
+3. 后续若考虑 Train+Validation 最终重训练或新消融，必须独立预注册；不得再次使用本轮 Test 调参或选择模型。
+
+## 2026-07-19：独立真实标签 Test 已完成
+
+- 冻结 E0 epoch13 与 E1 epoch8 各仅运行一次 Test 305；对正式工作区 `03_processed_data/labels_30m/xinjiang_2021/2021` 的 `y_patch_30m.npy` 同时输出原生30m和标签复制模型网格两套结果。
+- 所有统计为真实参考标签 `!=255`，未应用耕地掩膜或排除列表；最右/最下 1 个模型像元不纳入标签复制网格。
+- 原生30m E0/E1 maize IoU 为 `0.785097/0.770246`；标签复制网格为 `0.777586/0.761288`。两种尺度均支持 E0 高于 E1，Test 未参与任何选择。
+- 旧 `test_evaluation` 仅为伪标签一致性诊断；独立30m参考标签双口径结果为当前最终 held-out reference 报告。
+- 分支 `codex/e0-e1-test-evaluation`，HEAD `d00e53d6cb3fb0eb8ccfdddd6c98757c2cb3a198`；不 stage/commit/push。
+- 收尾验证：fresh 全量 pytest `92 passed in 9.65s`；`compileall` 和 `git diff --check` 均 exit0；17 个新文件的 whitespace 检查通过。
+## 2026-07-19 补充：独立30m Test 基线对照
+
+在同一 305 Test tiles、全部 `label !=255` 的 2,203,625 个原生30m cells 上，只读重算了原始 SAM+VVP/MMI Otsu 伪标签和历史 PEACENET EXP002，以消除其原先耕地掩膜口径与 E0/E1 的差异。原始伪标签的 F1/IoU/Kappa 为 `0.839264/0.723044/0.720908`；EXP002 为 `0.863125/0.759208/0.760399`；E0 为 `0.879613/0.785097/0.782022`，E1 为 `0.870213/0.770246/0.765665`。因此 E0 相对原始伪标签提高 `+4.03/+6.21/+6.11 pp`，相对 EXP002 提高 `+1.65/+2.59/+2.16 pp`（F1/IoU/Kappa）；E1 也高于两条基线但低于 E0。此对照不改变冻结方案、阈值、checkpoint 或基于 Validation 的 E0 选择。

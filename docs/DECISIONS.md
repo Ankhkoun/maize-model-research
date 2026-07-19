@@ -23,6 +23,9 @@
 | D-019 | 2026-07-17 | E0 以 init_scale=8192、growth_interval=1000000 完成 epoch 25 并早停；E1 启动前必须实现可审计的同批降 scale 重试。 | 从同一 epoch 24 checkpoint 的单变量重放证明 8192 完整通过 3327 steps。固定 scale 反复迁移说明策略本身脆弱；后续不得静默跳 batch，非有限 scaled gradient 应在不推进 optimizer/scheduler/global_step 的前提下降 scale 并重放同一 batch。 |
 | D-020 | 2026-07-18 | E1 冻结 AMP 同批重试：init_scale=8192、backoff=0.5、min_scale=128、每批最多 6 次降级、growth_interval=1000000。 | CUDA 测试证明失败尝试不改变参数或推进 optimizer/scheduler/global_step；成功重试只推进一次，并向 amp_events.jsonl 写入逐批审计。前向非有限立即终止，scale=128 仍失败则保留诊断并终止，不跳 batch、不切 FP32。 |
 | D-021 | 2026-07-18 | 将首轮 E1 登记为完成但未优于 E0 的受控负结果；当前不以 WPE 替换 E0。 | 独立完整 Validation 重放显示 E1 maize IoU 0.933572，低于 E0 的 0.938347（差 -0.004776）；F1 与 Kappa 也分别低 0.002548 和 0.004930。该结论只适用于当前 seed42、三基 WPE 与已批准训练方案，不使用 Test，也不排除后续预注册消融。 |
+| D-022 | 2026-07-19 | 使用独立、严格的 Test-only 入口对冻结 E0 epoch 13 与 E1 epoch 8 `best.pt` 各进行一次完整 Test 评价；Test 只用于最终报告，不改变 D-021。 | 入口只解析 305 条 Test records，并强制 checkpoint/manifest/normalization 哈希与配置一致。E1-E0 Test maize IoU/F1/Kappa 为 `-0.005821/-0.003143/-0.006571`，与 Validation 方向一致；不据此调参、搜索阈值、选择 checkpoint 或重跑训练，指标仅解释为空间留出伪标签一致性。 |
+
+| D-023 | 2026-07-19 | 冻结 E0/E1 的最终 Test 同时报告独立年度30m参考标签的原生30m和标签复制模型网格两种口径；两者均仅评价 `label !=255`，不使用耕地掩膜或排除列表。 | 30m参考标签原生支持域为85x85，而模型网格为256x256；固定3x3概率平均提供原生30m指标，固定3x3标签复制展示模型网格内的预测异质性。最右/最下1像元无对应30m支持域，明确忽略。E1相对E0的原生30m IoU/F1/Kappa差值为 `-0.014851/-0.009399/-0.016357`，标签复制网格为 `-0.016298/-0.010411/-0.017312`；只作最终报告，不反向改变 D-021。 |
 
 ## 当前已解决问题
 
