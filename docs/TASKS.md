@@ -66,3 +66,14 @@
 - [x] 保留先前伪标签 Test 为诊断，并将独立30m参考标签结果标记为最终 held-out reference 报告。
 - [ ] 用户审核后自行 stage/commit/push；当前不得自动发布。
 - [x] 独立真实标签 Test 收尾后 fresh 全量 pytest（92 passed）、compileall、git diff --check 与未跟踪文件 whitespace 检查。
+
+
+## 2026-07-19：E2-W
+
+- [x] 以 TDD 实现 learned `P_T` 和 content-only five-point Mexican-hat WPE，保持 E0/E1 兼容。
+- [x] 使用 Xinjiang2021 Train495/Validation276、24x24/patch2、seed42、batch16/16 完成正式训练；epoch25 正常早停，best epoch13。
+- [x] 在首次读取 Test 前独立重放完整 Validation 276 并核对 checkpoint、指标、混淆矩阵与 SHA256。
+- [x] 以 TDD 将 E2-W 加入严格冻结 Test 资产；fresh 全量 pytest、compileall、git diff --check 门禁通过。
+- [x] 对冻结 E2-W 各执行一次伪标签 Test 和独立30m Test；记录两种30m尺度、完整混淆矩阵、哈希和 E0 差值。
+- [x] Test 未用于调参、阈值、模型或 checkpoint 选择；E2-W 未超过 E0，保留 E0。
+- [ ] 用户审核后自行 stage/commit/push/PR；当前不得自动发布。

@@ -1,7 +1,7 @@
-import pytest
+﻿import pytest
 import torch
 
-from src.models.wavelet_position_encoding import LearnableWaveletPositionEncoding
+from src.models.wavelet_position_encoding import FivePointMexicanHatWaveletEncoding, LearnableWaveletPositionEncoding
 
 
 def _make_module(dim: int = 8) -> LearnableWaveletPositionEncoding:
@@ -129,3 +129,29 @@ def test_rejects_non_finite_doy_at_valid_frames() -> None:
 
     with pytest.raises(ValueError, match="finite"):
         module(tokens, doy, valid_mask)
+
+
+
+def test_e2w_five_point_kernels_are_learnable_bounded_zero_mean_and_l1_normalized() -> None:
+    module = FivePointMexicanHatWaveletEncoding(dim=8, scales_init=(0.75, 1.0, 1.25), scale_bounds=(0.5, 1.5), shifts_init=(0.0, 0.0, 0.0), shift_bounds=(-1.0, 1.0), gamma_init=1.0e-3)
+    with torch.no_grad():
+        module.raw_scales.copy_(torch.tensor([-1.0e6, 0.0, 1.0e6]))
+        module.raw_shifts.copy_(torch.tensor([-1.0e6, 0.0, 1.0e6]))
+    assert module.kernels.shape == (3, 5)
+    assert torch.all(module.scales >= 0.5) and torch.all(module.scales <= 1.5)
+    assert torch.all(module.shifts >= -1.0) and torch.all(module.shifts <= 1.0)
+    torch.testing.assert_close(module.kernels.sum(dim=-1), torch.zeros(3), atol=1e-6, rtol=0.0)
+    torch.testing.assert_close(module.kernels.abs().sum(dim=-1), torch.ones(3), atol=1e-6, rtol=0.0)
+
+
+def test_e2w_five_point_wavelet_masks_invalid_values_and_has_finite_gradients() -> None:
+    module = FivePointMexicanHatWaveletEncoding(dim=8)
+    tokens = torch.randn(1, 2, 5, 8, requires_grad=True)
+    changed = tokens.detach().clone()
+    changed[:, :, 4] = 10000.0
+    valid_mask = torch.tensor([[True, True, True, True, False]])
+    output = module(tokens, valid_mask)
+    changed_output = module(changed, valid_mask)
+    torch.testing.assert_close(output[:, :, :4], changed_output[:, :, :4], atol=0.0, rtol=0.0)
+    output.square().mean().backward()
+    assert all(parameter.grad is not None and torch.isfinite(parameter.grad).all() for parameter in module.parameters())

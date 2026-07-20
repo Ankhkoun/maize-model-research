@@ -159,7 +159,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     _seed_everything(int(config["experiment"]["seed"]))
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     if device.type != "cuda":
-        raise RuntimeError("formal E0/E1 ground-truth Test evaluation requires CUDA")
+        raise RuntimeError("formal E0/E1/E2-W ground-truth Test evaluation requires CUDA")
     model = TSViTSegmentation(config["model"]).to(device)
     checkpoint_metadata = load_frozen_checkpoint_for_test(
         args.checkpoint,

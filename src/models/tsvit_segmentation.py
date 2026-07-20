@@ -1,4 +1,4 @@
-"""Exact-style temporal-spatial ViT for direct semantic segmentation."""
+﻿"""Exact-style temporal-spatial ViT for direct semantic segmentation."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
-from .wavelet_position_encoding import LearnableWaveletPositionEncoding
+from .wavelet_position_encoding import FivePointMexicanHatWaveletEncoding, LearnableWaveletPositionEncoding
 
 
 class _TransformerBlock(nn.Module):
@@ -142,6 +142,14 @@ class TSViTSegmentation(nn.Module):
 
         self.patch_embedding = nn.Linear(patch_dim, self.dim)
         self.doy_embedding = nn.Embedding(367, self.dim, padding_idx=0)
+        temporal_position = dict(model_config.get("temporal_position_encoding", {}))
+        self.temporal_position_kind = temporal_position.get("kind", "doy_lookup")
+        if self.temporal_position_kind not in {"doy_lookup", "learned_slot"}:
+            raise ValueError("unsupported temporal position encoding")
+        self.temporal_slot_embedding = (
+            nn.Parameter(torch.randn(1, self.num_frames, self.dim))
+            if self.temporal_position_kind == "learned_slot" else None
+        )
         self.temporal_class_tokens = nn.Parameter(
             torch.randn(1, self.num_classes, self.dim)
         )
@@ -162,11 +170,13 @@ class TSViTSegmentation(nn.Module):
 
         wavelet_config = dict(model_config.get("wavelet", {}))
         wavelet_enabled = bool(wavelet_config.pop("enabled", False))
+        wavelet_kind = wavelet_config.pop("kind", "legacy")
         self.wavelet: LearnableWaveletPositionEncoding | None
         if wavelet_enabled:
-            self.wavelet = LearnableWaveletPositionEncoding(
-                dim=self.dim,
-                **wavelet_config,
+            self.wavelet = (
+                FivePointMexicanHatWaveletEncoding(dim=self.dim, **wavelet_config)
+                if wavelet_kind == "five_point_mexican_hat"
+                else LearnableWaveletPositionEncoding(dim=self.dim, **wavelet_config)
             )
         else:
             self.wavelet = None
@@ -248,11 +258,18 @@ class TSViTSegmentation(nn.Module):
                 raise ValueError(
                     "valid DOY values must be integer calendar days in [1,366]"
                 )
-        doy_indices = safe_doy.round().long()
-        doy_tokens = self.doy_embedding(doy_indices).to(dtype=patch_tokens.dtype)
-        temporal_tokens = patch_tokens + doy_tokens[:, None]
-        if self.wavelet is not None:
-            temporal_tokens = self.wavelet(temporal_tokens, doy, valid_mask)
+        if self.temporal_position_kind == "learned_slot":
+            assert self.temporal_slot_embedding is not None
+            position_tokens = self.temporal_slot_embedding.to(dtype=patch_tokens.dtype)
+            temporal_tokens = patch_tokens + position_tokens[:, None]
+            if isinstance(self.wavelet, FivePointMexicanHatWaveletEncoding):
+                temporal_tokens = self.wavelet(patch_tokens, valid_mask) + position_tokens[:, None]
+        else:
+            doy_indices = safe_doy.round().long()
+            doy_tokens = self.doy_embedding(doy_indices).to(dtype=patch_tokens.dtype)
+            temporal_tokens = patch_tokens + doy_tokens[:, None]
+            if self.wavelet is not None:
+                temporal_tokens = self.wavelet(temporal_tokens, doy, valid_mask)
 
         temporal_tokens = temporal_tokens.reshape(
             batch * self.num_patches, time, self.dim

@@ -17,6 +17,21 @@ def test_formal_frozen_checkpoint_paths_are_workspace_relative() -> None:
         assert asset.checkpoint.parts[:2] == ("06_models", "retrain_outputs")
 
 
+def test_e2w_formal_frozen_asset_is_exact() -> None:
+    asset = FROZEN_TEST_ASSETS["E2W"]
+
+    assert asset.experiment_id == "E2W"
+    assert asset.checkpoint == Path(
+        "06_models/retrain_outputs/maize_model_research/"
+        "e2w_tsvit_pt_mexican_hat_k5_seed42/best.pt"
+    )
+    assert asset.sha256 == (
+        "A74C8A33030172E94020410D1E46FB3439C4438ECC1E796F06CEA347DF859428"
+    )
+    assert asset.epoch == 13
+    assert asset.validation_maize_iou == 0.9369115428555538
+
+
 def test_loader_resolves_relative_frozen_checkpoint_from_workspace(
     tmp_path: Path,
 ) -> None:

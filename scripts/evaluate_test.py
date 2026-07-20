@@ -1,4 +1,4 @@
-"""Strict one-time Test evaluation for frozen formal E0/E1 checkpoints."""
+"""Strict one-time Test evaluation for frozen formal E0/E1/E2-W checkpoints."""
 
 from __future__ import annotations
 
@@ -81,6 +81,16 @@ FROZEN_TEST_ASSETS = {
         sha256="60B7A2C0715D45B20F5723DAD8C5ED8CB33E785AAD2A15AD39797A512E0CDDC8",
         epoch=8,
         validation_maize_iou=0.9335717434114438,
+    ),
+    "E2W": FrozenTestAsset(
+        experiment_id="E2W",
+        checkpoint=Path(
+            "06_models/retrain_outputs/maize_model_research/"
+            "e2w_tsvit_pt_mexican_hat_k5_seed42/best.pt"
+        ),
+        sha256="A74C8A33030172E94020410D1E46FB3439C4438ECC1E796F06CEA347DF859428",
+        epoch=13,
+        validation_maize_iou=0.9369115428555538,
     ),
 }
 
@@ -302,7 +312,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     _seed_everything(seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     if device.type != "cuda":
-        raise RuntimeError("formal E0/E1 Test evaluation requires CUDA")
+        raise RuntimeError("formal E0/E1/E2-W Test evaluation requires CUDA")
     model = TSViTSegmentation(config["model"]).to(device)
     checkpoint_metadata = load_frozen_checkpoint_for_test(
         args.checkpoint,
