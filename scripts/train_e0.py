@@ -1,4 +1,4 @@
-"""Train or replay Validation for formal Xinjiang 2021 E0/E1 experiments."""
+﻿"""Train or replay Validation for formal Xinjiang 2021 E0/E1 experiments."""
 
 from __future__ import annotations
 
@@ -43,6 +43,7 @@ FORMAL_OUTPUTS = {
     ),
 }
 
+FORMAL_OUTPUTS["E2W"] = Path(r"E:\maize_paper_workspace\06_models\retrain_outputs\maize_model_research\e2w_tsvit_pt_mexican_hat_k5_seed42")
 
 def formal_output_for(config: Mapping[str, Any]) -> Path:
     experiment_id = str(config["experiment"]["id"])
@@ -66,9 +67,9 @@ def load_formal_config(path: Path) -> dict[str, Any]:
         raise ValueError(f"formal configuration requires sections {sorted(required)}")
     experiment_id = str(config["experiment"]["id"])
     if experiment_id not in FORMAL_OUTPUTS:
-        raise ValueError("formal training requires experiment.id in {E0,E1}")
+        raise ValueError("formal training requires experiment.id in {E0,E1,E2W}")
     if config["model"]["image_size"] != 24 or config["model"]["patch_size"] != 2:
-        raise ValueError("formal E0/E1 requires image_size=24 and patch_size=2")
+        raise ValueError("formal E0/E1/E2W requires image_size=24 and patch_size=2")
     wavelet = config["model"].get("wavelet", {})
     if experiment_id == "E0" and bool(wavelet.get("enabled", False)):
         raise ValueError("formal E0 requires WPE disabled")

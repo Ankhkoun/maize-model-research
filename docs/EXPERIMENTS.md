@@ -231,3 +231,69 @@ E1 模型仅相对 E0 启用已批准的 WPE。以上结论来自同一 split、
 原始伪标签、EXP002、E0、E1 的原生30m confusion matrices（行是真实 0/1，列是预测 0/1）依次为 `[[1114224,89248],[212468,787685]]`、`[[1126230,77242],[182186,817967]]`、`[[1098066,105406],[132182,867971]]`、`[[1092559,110913],[144359,855794]]`，均和 2,203,625 个监督 cells 守恒。
 
 结论：E0 相对原始 SAM+指数伪标签的 F1/IoU/Kappa 分别提高 `0.04035/0.06205/0.06111`（+4.03/+6.21/+6.11 pp）；E1 对应提高 `0.03095/0.04720/0.04476`。E0 相对历史 EXP002 仍提高 F1/IoU/Kappa `0.01649/0.02589/0.02162`，E1 也分别提高 `0.00709/0.01104/0.00527`。两模型的 precision 低于旧基线，但 recall 的提升足以使 OA、F1、IoU 和 Kappa 提升；当前证据支持 E0 提取到超出原始伪标签与旧 PEACENET 的空间泛化信息，E1 虽高于两条基线但低于 E0。
+
+
+## E2-W：learned P_T + five-point Mexican-hat WPE
+
+| 字段 | 记录 |
+| --- | --- |
+| ID | E2W |
+| 状态 | completed；epoch 25 达到 patience=12 正常早停；best 为 epoch 13；stderr 0 bytes |
+| 日期 | 2026-07-19 |
+| Git | 分支 `codex/e2w-pt-mexican-hat`；基础 HEAD `ae7ccffaab8bf0d5f18d63b58c1657686f91e29c`；代码与记录未提交 |
+| Config | `configs/models/tsvit_e2w_pt_mexican_hat_k5.yaml`；SHA256 `71E5FE24D29738A64D5138E7B796D573AED868D0A09EA8EC9D001364B9BFB247` |
+| Architecture | learned temporal slot table `P_T=[1,26,128]`；content-only five-point Mexican-hat WPE，offsets `[-2,-1,0,1,2]`，三基 scale init `[0.75,1.0,1.25]`、bounds `[0.5,1.5]`，shift bounds `[-1,1]` |
+| Controlled settings | Xinjiang 2021；Train 495 / Validation 276 / Test 305；24x24/patch2；seed42；physical/effective batch16/16；训练计划、标签、损失、优化器、manifest 与 normalization 沿用 E0/E1 |
+| Parameters | 1,662,603 |
+| Best checkpoint | epoch 13 / global step 43251；`best.pt` SHA256 `A74C8A33030172E94020410D1E46FB3439C4438ECC1E796F06CEA347DF859428` |
+| Terminal checkpoint | epoch 25 / global step 83175 / bad_epochs 12；`last.pt` SHA256 `84054E53669B05D66FD23D48BCF3D0959591E5A7F65B933907CAFC2C8B7F36DA` |
+| Training records | `metrics.jsonl` SHA256 `C2C38CDAA6142B926F7A4C462CD30B1A1DBE60DCFC6A03D8F2A273AA2C13460F`；`amp_events.jsonl` SHA256 `617D97EB84F044FAF1513491B314DA07E58D8DCA93CAAE3E8F340ABB0017DFE5`；`run_snapshot.json` SHA256 `3141F5115D2B6F7A0A9064454BEA195B14A13A03FFA4E97BC97EE3FE189A39C0` |
+| AMP audit | 6 次同批 backoff，均为 `wavelet.gamma` Inf：epoch 1/17/21/23，scale `8192→4096→2048→1024→512→256→128`；同一失败 batch 成功后才推进，epoch optimizer steps 保持 3327 |
+| Learned wavelet at best | scales `[0.824393,1.099981,1.321753]`；shifts `[0.245128,0.221329,0.201444]`；gamma `-0.097273`；sigmoid gates min/mean/max `0.291193/0.491921/0.701593` |
+
+### 冻结 Validation 重放
+
+Test 首次读取前，独立新进程从冻结 `best.pt` 完整重放 Validation 276；结果与 checkpoint epoch 13 记录逐项一致。
+
+| 指标 | E2-W Validation | E0 Validation | E2-W−E0 |
+| --- | ---: | ---: | ---: |
+| loss | 0.095201 | 0.091894 | +0.003307 |
+| OA | 0.962346 | 0.963000 | -0.000654 |
+| precision | 0.968054 | 0.962826 | +0.005228 |
+| recall | 0.966803 | 0.973620 | -0.006817 |
+| F1 | 0.967428 | 0.968193 | -0.000765 |
+| maize IoU | 0.936912 | 0.938347 | -0.001436 |
+| mIoU | 0.925745 | 0.926827 | -0.001081 |
+| Kappa | 0.922812 | 0.923977 | -0.001164 |
+
+E2-W Validation confusion matrix 为 `[[4663806,213474],[222120,6468902]]`，supervised pixels `11568302`，evaluated tiles `276`。重放文件 `validation_replay_best_epoch13_20260719/validation_replay.json` SHA256 为 `FF8D39F054EC96AF351EA4EEBECE6CAEF4908FA2EEDCD60A1578E248F478E05F`。
+
+### 冻结 Test 一次性评价
+
+方案和 checkpoint 在 Test 前冻结。伪标签一致性 Test 与独立 30m Test 各只启动一个新进程；没有阈值搜索、模型修改、checkpoint 选择或重训练。
+
+| 指标 | E2-W 伪标签 Test | E2-W 原生30m Test | E2-W 标签复制网格 |
+| --- | ---: | ---: | ---: |
+| loss | 0.131462 | 0.352727 | 0.392375 |
+| OA | 0.949551 | 0.891294 | 0.887551 |
+| precision | 0.972903 | 0.900506 | 0.896463 |
+| recall | 0.948318 | 0.854949 | 0.850467 |
+| F1 | 0.960453 | 0.877136 | 0.872859 |
+| maize IoU | 0.923915 | 0.781160 | 0.774401 |
+| mIoU | 0.896843 | 0.801763 | 0.795630 |
+| Kappa | 0.890835 | 0.779780 | 0.772183 |
+| area ratio | 0.974731 | 0.949410 | 0.948692 |
+
+- 伪标签 Test：305 tiles / 12,295,425 supervised pixels；confusion matrix `[[4142798,209790],[410501,7532336]]`；相对 E0 的 IoU/F1/Kappa 为 `-0.003592/-0.001937/-0.004126`。
+- 原生30m：305 tiles / 2,203,625 supervised cells；confusion matrix `[[1108997,94475],[145073,855080]]`；相对 E0 的 IoU/F1/Kappa 为 `-0.003937/-0.002476/-0.002242`。
+- 标签复制网格：305 tiles / 19,832,625 supervised pixels；confusion matrix `[[9947087,884161],[1346005,7655372]]`；相对 E0 的 IoU/F1/Kappa 为 `-0.003185/-0.002019/-0.001468`。
+
+| 输出 | SHA256 |
+| --- | --- |
+| `test_evaluation/test_evaluation.json` | `D4586E36003DDD8629E2F23F6165B02754A81F08C050865484ABBD3B1F4F850E` |
+| `test_evaluation/run_snapshot.json` | `1458A3989FBDCCBFF9410A3650B24F4406F58DA355664BAFA68C046196390F3D` |
+| `test_evaluation_ground_truth/native30m/test_evaluation.json` | `CC35CF6B812E8C2DA1C940B323961BE50F03F5C160BD55BFA36B7462BCC9F211` |
+| `test_evaluation_ground_truth/upsampled10m/test_evaluation.json` | `4D8DD8BEEF70192DF4A8736F4CFEA2C80FFCD53FC2D258CB52452A7C905569AD` |
+| `test_evaluation_ground_truth/run_snapshot.json` | `BA9496D1BA971692AE9C13D1B9737D4C837B7332015CDBD0B65B2C44DB32A916` |
+
+结论：E2-W 比 E1 更接近 E0，但在冻结 Validation、伪标签 Test 和独立原生30m Test 的 maize IoU/F1/Kappa 上均未超过 E0，因此继续保留 E0 为当前最佳模型。E2-W 同时将 DOY lookup 替换为 learned `P_T` 并加入 five-point WPE，结果不能解释为“单独增加 WPE”的效应。

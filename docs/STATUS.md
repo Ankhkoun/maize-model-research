@@ -105,3 +105,14 @@
 ## 2026-07-19 补充：独立30m Test 基线对照
 
 在同一 305 Test tiles、全部 `label !=255` 的 2,203,625 个原生30m cells 上，只读重算了原始 SAM+VVP/MMI Otsu 伪标签和历史 PEACENET EXP002，以消除其原先耕地掩膜口径与 E0/E1 的差异。原始伪标签的 F1/IoU/Kappa 为 `0.839264/0.723044/0.720908`；EXP002 为 `0.863125/0.759208/0.760399`；E0 为 `0.879613/0.785097/0.782022`，E1 为 `0.870213/0.770246/0.765665`。因此 E0 相对原始伪标签提高 `+4.03/+6.21/+6.11 pp`，相对 EXP002 提高 `+1.65/+2.59/+2.16 pp`（F1/IoU/Kappa）；E1 也高于两条基线但低于 E0。此对照不改变冻结方案、阈值、checkpoint 或基于 Validation 的 E0 选择。
+
+
+## 2026-07-19：E2-W 训练、Validation 重放与双口径 Test 完成
+
+- E2-W 使用 learned 26-slot `P_T` 和 content-only five-point Mexican-hat WPE；Xinjiang2021、24x24/patch2、Train495/Validation276/Test305、seed42、batch16/16。
+- epoch25 因 bad_epochs=12 正常早停；best 为 epoch13/global step43251；`best.pt` SHA256 `A74C8A33030172E94020410D1E46FB3439C4438ECC1E796F06CEA347DF859428`。
+- Test 前独立 Validation 重放逐项一致：IoU/F1/Kappa `0.936912/0.967428/0.922812`；相对 E0 `-0.001436/-0.000765/-0.001164`。
+- 一次性伪标签 Test IoU/F1/Kappa `0.923915/0.960453/0.890835`；相对 E0 `-0.003592/-0.001937/-0.004126`。
+- 一次性独立原生30m Test IoU/F1/Kappa `0.781160/0.877136/0.779780`；相对 E0 `-0.003937/-0.002476/-0.002242`。标签复制网格 IoU `0.774401`。
+- 两个 Test 入口各只执行一次；Test 未用于调参、阈值、模型或 checkpoint 选择。E2-W 未超过 E0，继续保留 E0 为当前最佳模型。
+- 分支 `codex/e2w-pt-mexican-hat`，基础 HEAD `ae7ccffaab8bf0d5f18d63b58c1657686f91e29c`；未 stage/commit/push/PR。

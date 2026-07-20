@@ -1,4 +1,4 @@
-"""Learnable Mexican-hat wavelet position encoding for temporal tokens."""
+﻿"""Learnable Mexican-hat wavelet position encoding for temporal tokens."""
 
 from __future__ import annotations
 
@@ -138,3 +138,49 @@ class LearnableWaveletPositionEncoding(nn.Module):
         wavelet_residual = self.fusion(fused_input)
         wavelet_residual = wavelet_residual * valid_mask[:, None, :, None]
         return tokens + self.alpha.to(tokens.dtype) * wavelet_residual
+
+class FivePointMexicanHatWaveletEncoding(nn.Module):
+    """Content-only local Mexican-hat residual encoding for E2-W."""
+    def __init__(self, dim: int, scales_init: Sequence[float] = (0.75, 1.0, 1.25), scale_bounds: tuple[float, float] = (0.5, 1.5), shifts_init: Sequence[float] = (0.0, 0.0, 0.0), shift_bounds: tuple[float, float] = (-1.0, 1.0), gamma_init: float = 1.0e-3, eps: float = 1.0e-6) -> None:
+        super().__init__()
+        if dim <= 0 or len(scales_init) != 3 or len(shifts_init) != 3:
+            raise ValueError('E2-W requires positive dim and exactly three bases')
+        self.dim, self.num_bases, self.eps = dim, 3, eps
+        self.scale_min, self.scale_max = map(float, scale_bounds)
+        self.shift_min, self.shift_max = map(float, shift_bounds)
+        if not (0 < self.scale_min < self.scale_max) or not self.shift_min < self.shift_max:
+            raise ValueError('invalid E2-W bounds')
+        scales, shifts = torch.tensor(scales_init), torch.tensor(shifts_init)
+        if torch.any(scales < self.scale_min) or torch.any(scales > self.scale_max) or torch.any(shifts < self.shift_min) or torch.any(shifts > self.shift_max):
+            raise ValueError('initial E2-W parameters must lie inside bounds')
+        self.raw_scales = nn.Parameter(torch.logit((scales-self.scale_min)/(self.scale_max-self.scale_min)))
+        self.raw_shifts = nn.Parameter(torch.logit((shifts-self.shift_min)/(self.shift_max-self.shift_min)))
+        self.raw_gates = nn.Parameter(torch.zeros(3, dim))
+        self.gamma = nn.Parameter(torch.tensor(gamma_init))
+        self.input_norm, self.output_norm = nn.LayerNorm(dim), nn.LayerNorm(dim)
+        self.register_buffer('delta_t', torch.tensor([-2., -1., 0., 1., 2.]), persistent=False)
+    @property
+    def scales(self) -> torch.Tensor:
+        return self.scale_min + (self.scale_max-self.scale_min)*torch.sigmoid(self.raw_scales)
+    @property
+    def shifts(self) -> torch.Tensor:
+        return self.shift_min + (self.shift_max-self.shift_min)*torch.sigmoid(self.raw_shifts)
+    @property
+    def kernels(self) -> torch.Tensor:
+        u = (self.delta_t[None] - self.shifts[:, None]) / self.scales[:, None]
+        psi = (1-u.square()) * torch.exp(-0.5*u.square())
+        psi = psi - psi.mean(dim=-1, keepdim=True)
+        return psi / psi.abs().sum(dim=-1, keepdim=True).clamp_min(self.eps)
+    def forward(self, tokens: torch.Tensor, valid_mask: torch.Tensor) -> torch.Tensor:
+        if tokens.ndim != 4 or tokens.shape[-1] != self.dim or valid_mask.shape != (tokens.shape[0], tokens.shape[2]) or valid_mask.dtype is not torch.bool:
+            raise ValueError('invalid E2-W token or valid-mask contract')
+        b,n,t,d = tokens.shape
+        normalized = self.input_norm(tokens)
+        safe = torch.where(valid_mask[:,None,:,None], normalized, torch.zeros_like(normalized))
+        indices = (torch.arange(t, device=tokens.device)[:,None] + self.delta_t.to(tokens.device)[None].long()).clamp(0,t-1)
+        local = safe[:,:,indices,:]
+        key_valid = valid_mask[:,None,indices,None]
+        responses = (local[:, :, None] * self.kernels[None, None, :, None, :, None].to(tokens.dtype) * key_valid[:, :, None]).sum(dim=-2)
+        residual = (responses * torch.sigmoid(self.raw_gates)[None,None,:,None,:].to(tokens.dtype)).sum(dim=2)
+        residual = self.output_norm(residual) * valid_mask[:,None,:,None]
+        return tokens + self.gamma.to(tokens.dtype)*residual
