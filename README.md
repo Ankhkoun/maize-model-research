@@ -12,7 +12,8 @@ Sentinel-2 多时相数据
   -> 空间独立 AOI 上的受控对比和消融
 ```
 
-当前已完成可复现基线包括 Xinjiang 2021 PEACE-Net EXP002、Exact 风格 E0（TSViT+learned DOY）和受控 E1（E0+learnable WPE）。E0/E1 均完成正式 Train/Validation 训练、Validation early stopping 和独立 `best.pt` 重放；首轮 E1 的 Validation maize IoU 未超过 E0，因此当前仍以 E0 作为这组对照中的最佳模型。
+当前已完成可复现基线包括 Xinjiang 2021 PEACE-Net EXP002、Exact 风格 E0（TSViT+learned DOY）和受控 E1（E0+learnable WPE）。E0/E1 均完成正式 Train/Validation 训练、Validation early stopping 、独立 `best.pt` 重放与测试集推理；首轮 E1 的 Validation maize IoU 未超过 E0，因此当前仍以 E0 作为这组对照中的最佳模型。
+E2-W(DOY+WPE)当前已完成模型的训练和测试集推理
 
 ## 本地数据连接
 
