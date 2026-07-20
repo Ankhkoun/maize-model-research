@@ -1,4 +1,4 @@
-"""Deterministic full-tile Validation evaluation."""
+"""Deterministic full-tile evaluation for an explicitly authorized split."""
 
 from __future__ import annotations
 
@@ -24,9 +24,13 @@ def evaluate_tiles(
     window_batch_size: int = 16,
     ignore_index: int = 255,
     amp: bool = True,
+    expected_split: str = "validation",
 ) -> dict[str, Any]:
     if window_batch_size <= 0:
         raise ValueError("window_batch_size must be positive")
+    if expected_split not in {"validation", "test"}:
+        raise ValueError("expected_split must be 'validation' or 'test'")
+    split_name = expected_split.capitalize()
     overall = ConfusionMatrix(2, ignore_index)
     by_region: dict[str, ConfusionMatrix] = defaultdict(
         lambda: ConfusionMatrix(2, ignore_index)
@@ -40,9 +44,9 @@ def evaluate_tiles(
         with torch.inference_mode():
             for index in range(len(dataset)):
                 sample = dataset[index]
-                if sample["split"] != "validation":
+                if sample["split"] != expected_split:
                     raise ValueError(
-                        "Validation-only evaluator received a non-validation sample"
+                        f"{split_name}-only evaluator received a non-{expected_split} sample"
                     )
                 images = torch.as_tensor(sample["images"])
                 label = torch.as_tensor(sample["label"], dtype=torch.long)
@@ -73,7 +77,7 @@ def evaluate_tiles(
                         logits = model(batch, batch_doy, batch_mask)
                     if not torch.isfinite(logits).all():
                         raise FloatingPointError(
-                            f"non-finite validation logits for {sample['sample_id']}"
+                            f"non-finite {expected_split} logits for {sample['sample_id']}"
                         )
                     accumulator.add(logits, kept[start:stop])
                 stitched = accumulator.finalize().float()
@@ -96,7 +100,7 @@ def evaluate_tiles(
         model.train(was_training)
 
     if evaluated_tiles == 0 or supervised_pixels == 0:
-        raise ValueError("Validation evaluation requires supervised tiles")
+        raise ValueError(f"{split_name} evaluation requires supervised tiles")
     metrics = overall.compute()
     metrics.update(
         {
