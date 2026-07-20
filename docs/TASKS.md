@@ -76,4 +76,10 @@
 - [x] 以 TDD 将 E2-W 加入严格冻结 Test 资产；fresh 全量 pytest、compileall、git diff --check 门禁通过。
 - [x] 对冻结 E2-W 各执行一次伪标签 Test 和独立30m Test；记录两种30m尺度、完整混淆矩阵、哈希和 E0 差值。
 - [x] Test 未用于调参、阈值、模型或 checkpoint 选择；E2-W 未超过 E0，保留 E0。
-- [ ] 用户审核后自行 stage/commit/push/PR；当前不得自动发布。
+- [x] E2-W 核心实现已由用户提交为 `a2bd7ce9e771868e08327122dd31db4c58e3add7` 并推送至 `origin/codex/e2w-pt-mexican-hat`；PR 仍待用户创建。
+
+## 2026-07-20：五方法原生30m对比图与检查点
+
+- [x] 生成五方法独立原生30m Test 对比表的 PNG/PDF、可复现脚本和单测；主报告只使用相同 305 Test tiles、2,203,625 个 `label !=255` 的原生30m参考像元。
+- [x] 将图件的数据口径、生成命令、列顺序、最优值标记和解释边界集中记录于 `docs/FIGURES.md`。
+- [ ] 用户审阅图件版式和说明后，自行提交图件资产与检查点文档；不得重新使用 Test 调参。

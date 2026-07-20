@@ -297,3 +297,7 @@ E2-W Validation confusion matrix 为 `[[4663806,213474],[222120,6468902]]`，sup
 | `test_evaluation_ground_truth/run_snapshot.json` | `BA9496D1BA971692AE9C13D1B9737D4C837B7332015CDBD0B65B2C44DB32A916` |
 
 结论：E2-W 比 E1 更接近 E0，但在冻结 Validation、伪标签 Test 和独立原生30m Test 的 maize IoU/F1/Kappa 上均未超过 E0，因此继续保留 E0 为当前最佳模型。E2-W 同时将 DOY lookup 替换为 learned `P_T` 并加入 five-point WPE，结果不能解释为“单独增加 WPE”的效应。
+
+### 五方法独立原生30m Test 对比图
+
+为后续论文绘图生成了 `figures/fig_native30m_test_comparison_table.png` 与 `.pdf`，其可复现脚本为 `figures/gen_fig_native30m_test_comparison_table.py`。该图仅汇总同一 305 Test tiles、2,203,625 个 `label !=255` 原生30m参考像元上的 F1、maize IoU、Kappa、Precision、Recall 与 OA；每列最高值加粗，不含 area ratio。图件复用规则、生成命令、验证步骤和不得混入伪标签/上采样10m结果的边界，见 `docs/FIGURES.md`。
