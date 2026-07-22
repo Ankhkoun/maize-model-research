@@ -267,8 +267,13 @@ class TSViTSegmentation(nn.Module):
         else:
             doy_indices = safe_doy.round().long()
             doy_tokens = self.doy_embedding(doy_indices).to(dtype=patch_tokens.dtype)
-            temporal_tokens = patch_tokens + doy_tokens[:, None]
-            if self.wavelet is not None:
+            if isinstance(self.wavelet, FivePointMexicanHatWaveletEncoding):
+                temporal_tokens = self.wavelet(patch_tokens, valid_mask) + doy_tokens[:, None]
+            else:
+                temporal_tokens = patch_tokens + doy_tokens[:, None]
+            if self.wavelet is not None and not isinstance(
+                self.wavelet, FivePointMexicanHatWaveletEncoding
+            ):
                 temporal_tokens = self.wavelet(temporal_tokens, doy, valid_mask)
 
         temporal_tokens = temporal_tokens.reshape(

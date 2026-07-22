@@ -44,6 +44,9 @@ FORMAL_OUTPUTS = {
 }
 
 FORMAL_OUTPUTS["E2W"] = Path(r"E:\maize_paper_workspace\06_models\retrain_outputs\maize_model_research\e2w_tsvit_pt_mexican_hat_k5_seed42")
+FORMAL_OUTPUTS["E2-WPEonly"] = Path(
+    r"E:\maize_paper_workspace\06_models\retrain_outputs\maize_model_research\e2_wpeonly_tsvit_doy_mexican_hat_k5_seed42"
+)
 
 def formal_output_for(config: Mapping[str, Any]) -> Path:
     experiment_id = str(config["experiment"]["id"])
@@ -67,9 +70,13 @@ def load_formal_config(path: Path) -> dict[str, Any]:
         raise ValueError(f"formal configuration requires sections {sorted(required)}")
     experiment_id = str(config["experiment"]["id"])
     if experiment_id not in FORMAL_OUTPUTS:
-        raise ValueError("formal training requires experiment.id in {E0,E1,E2W}")
+        raise ValueError(
+            "formal training requires experiment.id in {E0,E1,E2W,E2-WPEonly}"
+        )
     if config["model"]["image_size"] != 24 or config["model"]["patch_size"] != 2:
-        raise ValueError("formal E0/E1/E2W requires image_size=24 and patch_size=2")
+        raise ValueError(
+            "formal E0/E1/E2W/E2-WPEonly requires image_size=24 and patch_size=2"
+        )
     wavelet = config["model"].get("wavelet", {})
     if experiment_id == "E0" and bool(wavelet.get("enabled", False)):
         raise ValueError("formal E0 requires WPE disabled")
@@ -88,6 +95,24 @@ def load_formal_config(path: Path) -> dict[str, Any]:
         if not bool(wavelet.get("enabled", False)):
             raise ValueError("formal E1 requires WPE enabled")
         raise ValueError("formal E1 WPE parameters differ from the frozen design")
+    expected_e2_wpeonly_wavelet = {
+        "enabled": True,
+        "kind": "five_point_mexican_hat",
+        "scales_init": [0.75, 1.0, 1.25],
+        "scale_bounds": [0.5, 1.5],
+        "shifts_init": [0.0, 0.0, 0.0],
+        "shift_bounds": [-1.0, 1.0],
+        "gamma_init": 0.001,
+        "eps": 1.0e-6,
+    }
+    if experiment_id == "E2-WPEonly":
+        temporal_position = config["model"].get("temporal_position_encoding", {})
+        if temporal_position != {"kind": "doy_lookup"}:
+            raise ValueError("formal E2-WPEonly requires the calendar DOY lookup")
+        if wavelet != expected_e2_wpeonly_wavelet:
+            raise ValueError(
+                "formal E2-WPEonly WPE parameters differ from the frozen design"
+            )
     expected_training = {
         "max_epochs": 100,
         "effective_batch_size": 16,

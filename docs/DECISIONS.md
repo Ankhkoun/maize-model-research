@@ -28,6 +28,7 @@
 | D-023 | 2026-07-19 | 冻结 E0/E1 的最终 Test 同时报告独立年度30m参考标签的原生30m和标签复制模型网格两种口径；两者均仅评价 `label !=255`，不使用耕地掩膜或排除列表。 | 30m参考标签原生支持域为85x85，而模型网格为256x256；固定3x3概率平均提供原生30m指标，固定3x3标签复制展示模型网格内的预测异质性。最右/最下1像元无对应30m支持域，明确忽略。E1相对E0的原生30m IoU/F1/Kappa差值为 `-0.014851/-0.009399/-0.016357`，标签复制网格为 `-0.016298/-0.010411/-0.017312`；只作最终报告，不反向改变 D-021。 |
 
 | D-024 | 2026-07-19 | 将 E2-W（learned `P_T` + content-only five-point Mexican-hat WPE）登记为完成但未超过 E0 的负结果；冻结 epoch13 后仅执行一次伪标签 Test 和一次独立30m Test。 | E2-W 相对 E0 的 Validation IoU/F1/Kappa 为 `-0.001436/-0.000765/-0.001164`，伪标签 Test 为 `-0.003592/-0.001937/-0.004126`，原生30m Test 为 `-0.003937/-0.002476/-0.002242`。三种口径方向一致，继续保留 E0。E2-W 同时替换 temporal position table 和加入 WPE，不能解释为单独 WPE 效应；Test 不反向改变选择。 |
+| D-025 | 2026-07-22 | 将原预留 E2 的 WPE-only/绝对 DOY 互补性实验正式命名为 `E2-WPEonly`；保留 E0 calendar DOY lookup，只在 content-only patch tokens 上增加 E2-W 的 five-point Mexican-hat WPE。原预留 E3 继续专属于 source-derived quality 扩展，不复用。 | E2-W 同时替换 `P_T` 并加入 WPE，不能解释纯 WPE 效应；E2-WPEonly 相对 E0 的唯一结构差异是 five-point WPE。代码与 Train/Validation-only smoke 已通过，但正式训练仍须用户另行批准，且不得读取 Test。 |
 
 ## 当前已解决问题
 

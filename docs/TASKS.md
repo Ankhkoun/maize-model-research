@@ -77,3 +77,15 @@
 - [x] 对冻结 E2-W 各执行一次伪标签 Test 和独立30m Test；记录两种30m尺度、完整混淆矩阵、哈希和 E0 差值。
 - [x] Test 未用于调参、阈值、模型或 checkpoint 选择；E2-W 未超过 E0，保留 E0。
 - [ ] 用户审核后自行 stage/commit/push/PR；当前不得自动发布。
+
+## 2026-07-22：E2-WPEonly
+
+- [x] 核对旧 ID 预留：E3 保留 source-derived quality；正式使用 `E2-WPEonly`。
+- [x] 预注册 E0 calendar DOY + content-only K5 WPE 的单变量结构消融与解释规则。
+- [x] 以 TDD 修复 DOY 分支对 five-point WPE 的错误接口调用，并固定 WPE 后加 DOY 的路由顺序。
+- [x] 验证 `doy_lookup`、无 learned slot、content-only 输入、padding/query/class token 隔离和关闭 WPE 时 E0 等价。
+- [x] 验证 CUDA 前反向有限与 AMP 同批 backoff 不错误推进 optimizer/scheduler/global step。
+- [x] 通过全量 pytest 103 项、compileall、`git diff --check` 和真实 batch16/16 Train/Validation-only smoke。
+- [x] smoke 中固定 batch 过拟合、单 tile Validation、checkpoint 精确重载和 `test_records_loaded=0` 通过。
+- [ ] 用户明确批准后才启动正式 E2-WPEonly Train/Validation；当前不得读取或运行 Test。
+- [ ] 正式训练结束后新进程独立重放完整 Validation；在用户另行批准前仍不得读取 Test。

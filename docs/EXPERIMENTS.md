@@ -297,3 +297,21 @@ E2-W Validation confusion matrix 为 `[[4663806,213474],[222120,6468902]]`，sup
 | `test_evaluation_ground_truth/run_snapshot.json` | `BA9496D1BA971692AE9C13D1B9737D4C837B7332015CDBD0B65B2C44DB32A916` |
 
 结论：E2-W 比 E1 更接近 E0，但在冻结 Validation、伪标签 Test 和独立原生30m Test 的 maize IoU/F1/Kappa 上均未超过 E0，因此继续保留 E0 为当前最佳模型。E2-W 同时将 DOY lookup 替换为 learned `P_T` 并加入 five-point WPE，结果不能解释为“单独增加 WPE”的效应。
+
+## E2-WPEonly：calendar DOY + content-only five-point Mexican-hat WPE
+
+| 字段 | 记录 |
+| --- | --- |
+| ID | E2-WPEonly |
+| 状态 | code_ready / not_run；正式训练未启动 |
+| 日期 | 2026-07-22 |
+| Config | `configs/models/tsvit_e2_wpeonly_doy_mexican_hat_k5.yaml`；SHA256 `DC02660A8CE4B32D8189875B1C79E2AB7DB617D1262276E83EF5E2FF3867E28B` |
+| Architecture | `FivePointMexicanHatWaveletEncoding(patch_tokens, valid_mask) + nn.Embedding(367,128)(calendar DOY)`；无 learned `P_T`；class token 不进入 WPE |
+| Controlled settings | 相对 E0 仅启用 E2-W 的 K5 WPE；Xinjiang 2021、Train495/Validation276/Test305、24x24/patch2、seed42、batch16/16、manifest、normalization、loss、optimizer、schedule 与 Validation 选择规则全部冻结 |
+| Parameters | 1,659,275 |
+| CUDA smoke | RTX 5060 Ti；physical/effective batch16/16；8-step fixed-batch loss `1.020774→0.006388`；peak allocated `1,859,900,416` bytes；checkpoint logits 精确重载；1-tile Validation 入口通过；`test_records_loaded=0`；结果 SHA256 `FA47332C2EA2F3C9E995C741B51CA79DB5CEDCF3141DD67E1A9B771A05678024` |
+| Verification | 新增目标测试 8 passed；相关回归 34 passed；fresh 全量 pytest 103 passed；compileall 与 `git diff --check` exit0 |
+| Selection rule | 仅完整 Validation maize IoU；E0 固定参考为 `0.938347` |
+| Test boundary | 未为 E2-WPEonly 注册冻结 Test asset；本阶段不解析、不加载、不运行 Test |
+
+E2-WPEonly 实现了 E2-W 无法提供的纯结构消融。若其 Validation maize IoU 超过 E0，支持 K5 WPE 与 calendar DOY 互补；否则不支持 K5 WPE 在当前冻结设置下改善 E0。单 seed 结果仅作受控描述，不声明跨 seed 显著性。

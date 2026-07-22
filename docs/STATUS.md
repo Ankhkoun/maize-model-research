@@ -116,3 +116,13 @@
 - 一次性独立原生30m Test IoU/F1/Kappa `0.781160/0.877136/0.779780`；相对 E0 `-0.003937/-0.002476/-0.002242`。标签复制网格 IoU `0.774401`。
 - 两个 Test 入口各只执行一次；Test 未用于调参、阈值、模型或 checkpoint 选择。E2-W 未超过 E0，继续保留 E0 为当前最佳模型。
 - 分支 `codex/e2w-pt-mexican-hat`，基础 HEAD `ae7ccffaab8bf0d5f18d63b58c1657686f91e29c`；未 stage/commit/push/PR。
+
+## 2026-07-22：E2-WPEonly 代码与 smoke 就绪，正式训练未启动
+
+- 正式 ID 为 `E2-WPEonly`；旧 E3 继续保留给 source-derived quality，不发生 ID 冲突。
+- 新配置保留 E0 `nn.Embedding(367,128)` calendar DOY，不创建 learned `P_T`；路由为 `WPE(patch_tokens, valid_mask) + DOY`。
+- E2-WPEonly 相对 E0 的唯一结构差异是启用固定 K5 three-base Mexican-hat WPE；E0/E1/E2-W 冻结路由回归通过。
+- TDD 证据：实现前 DOY 分支以错误三参数接口调用 five-point WPE；修复后新增 8 tests、相关 34 tests、全量 103 tests 均通过。
+- 真实 CUDA smoke：RTX 5060 Ti，batch16/16，参数量1,659,275，peak allocated 1,859,900,416 bytes，固定 batch loss `1.020774→0.006388`，checkpoint 精确重载。
+- smoke 只构造 Train/Validation，结果明确 `test_records_loaded=0`；没有注册 E2-WPEonly Test asset，没有读取或运行 Test。
+- 当前仍以 E0 为最佳；E2-WPEonly 状态为 `code_ready / not_run`，只有用户再次明确批准后才能启动正式训练。
