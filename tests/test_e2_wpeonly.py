@@ -87,16 +87,16 @@ def test_e2_wpeonly_config_is_a_single_factor_e0_ablation() -> None:
     assert e2_common == e0_common
 
 
-def test_e2_wpeonly_formal_entry_is_frozen_and_has_no_test_asset() -> None:
+def test_e2_wpeonly_formal_entry_is_frozen_with_exact_test_asset() -> None:
     config = load_formal_config(E2_WPEONLY_PATH)
 
     assert config["experiment"]["id"] == "E2-WPEonly"
     assert train_e0.formal_output_for(config).name == (
         "e2_wpeonly_tsvit_doy_mexican_hat_k5_seed42"
     )
-    assert "E2-WPEonly" not in FROZEN_TEST_ASSETS
-
-
+    asset = FROZEN_TEST_ASSETS["E2-WPEonly"]
+    assert asset.epoch == 11
+    assert asset.validation_maize_iou == 0.9375021026721523
 def test_e2_wpeonly_rejects_learned_temporal_slots(tmp_path: Path) -> None:
     config = _load_document(E2_WPEONLY_PATH)
     config["model"]["temporal_position_encoding"]["kind"] = "learned_slot"

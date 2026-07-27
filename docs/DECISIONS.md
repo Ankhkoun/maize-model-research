@@ -29,6 +29,7 @@
 
 | D-024 | 2026-07-19 | 将 E2-W（learned `P_T` + content-only five-point Mexican-hat WPE）登记为完成但未超过 E0 的负结果；冻结 epoch13 后仅执行一次伪标签 Test 和一次独立30m Test。 | E2-W 相对 E0 的 Validation IoU/F1/Kappa 为 `-0.001436/-0.000765/-0.001164`，伪标签 Test 为 `-0.003592/-0.001937/-0.004126`，原生30m Test 为 `-0.003937/-0.002476/-0.002242`。三种口径方向一致，继续保留 E0。E2-W 同时替换 temporal position table 和加入 WPE，不能解释为单独 WPE 效应；Test 不反向改变选择。 |
 | D-025 | 2026-07-22 | 将原预留 E2 的 WPE-only/绝对 DOY 互补性实验正式命名为 `E2-WPEonly`；保留 E0 calendar DOY lookup，只在 content-only patch tokens 上增加 E2-W 的 five-point Mexican-hat WPE。原预留 E3 继续专属于 source-derived quality 扩展，不复用。 | E2-W 同时替换 `P_T` 并加入 WPE，不能解释纯 WPE 效应；E2-WPEonly 相对 E0 的唯一结构差异是 five-point WPE。代码与 Train/Validation-only smoke 已通过，但正式训练仍须用户另行批准，且不得读取 Test。 |
+| D-026 | 2026-07-23 | 将 E2-WPEonly 登记为完成但未超过 E0 的单变量结构消融；继续以 E0 为当前最佳，并保持 E2-WPEonly Test 未运行。 | 独立 Validation 重放显示 E2-WPEonly IoU/F1/Kappa 为 `0.937502/0.967743/0.924106`，相对 E0 为 `-0.000845/-0.000450/+0.000129`，相对 E2-W 为 `+0.000591/+0.000315/+0.001294`。恢复 calendar DOY 缩小了与 E0 的差距，但预注册选择指标 maize IoU 仍未超过 E0，因此不支持 K5 WPE 在当前 seed42 冻结设置下改善 E0；单 seed 不声明显著性。 |
 
 ## 当前已解决问题
 
@@ -45,3 +46,5 @@
 | O-002 | 训练集 10 波段归一化参数是什么？ | 只能用 Train 三个区域计算，冻结后 E0/E1 共用。 |
 | O-003 | 1076 个 Xinjiang 2021 样本是否存在独立参考标签？ | 已确认 Test 305 条均有年度30m `y_patch_30m.npy`；最终报告使用原生30m与标签复制网格双口径，伪标签 Test 仅保留为一致性诊断。 |
 | O-004 | 最终重训练是否合并 Train+Validation？ | 仅在所有超参数和 epoch 规则由开发阶段冻结后考虑；不得再用 Test 调参。 |
+
+| D-027 | 2026-07-26 | After explicit user authorization, register E2-WPEonly as a frozen Test asset and run exactly one pseudo-label Test plus one independent annual 30m ground-truth Test; retain E0 as the current best model. | The frozen best checkpoint (epoch 11) passed strict hash/config/manifest/normalization checks. E2-WPEonly pseudo Test IoU/F1/Kappa was `0.926351/0.961768/0.894869`; native30m reference was `0.780135/0.876490/0.777386`; upsampled10m label-grid was `0.771875/0.871252/0.768449`. All remain below E0 on the reported IoU/F1/Kappa comparisons. Test is final reporting only and does not change the pre-registered Validation selection rule, checkpoint, threshold, model, or training. |

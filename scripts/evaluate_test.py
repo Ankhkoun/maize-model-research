@@ -92,6 +92,16 @@ FROZEN_TEST_ASSETS = {
         epoch=13,
         validation_maize_iou=0.9369115428555538,
     ),
+    "E2-WPEonly": FrozenTestAsset(
+        experiment_id="E2-WPEonly",
+        checkpoint=Path(
+            "06_models/retrain_outputs/maize_model_research/"
+            "e2_wpeonly_tsvit_doy_mexican_hat_k5_seed42/best.pt"
+        ),
+        sha256="1C5F697D5FF12D114295D1FD359ADE1AA90342DE71DEAA3D5A3A1BD69130EBD8",
+        epoch=11,
+        validation_maize_iou=0.9375021026721523,
+    ),
 }
 
 

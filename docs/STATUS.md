@@ -1,11 +1,11 @@
 # Current Status
 
-更新时间：2026-07-19
-检查点类型：E0/E1 冻结 Train/Validation 与一次性 Test 评价均已完成。
+更新时间：2026-07-23
+检查点类型：E2-WPEonly 正式 Train/Validation 与独立 Validation 重放已完成；Test 未读取、未运行。
 
 ## 项目目标
 
-使用 Sentinel-2 多时相数据和可追溯伪标签完成玉米直接语义分割，并在空间独立区域上比较 TSViT baseline（E0）与仅增加可学习 Mexican-hat 小波位置编码的 E1。
+使用 Sentinel-2 多时相数据和可追溯伪标签完成玉米直接语义分割，并在空间独立区域上比较 TSViT baseline（E0）、连续 DOY 三基 WPE（E1）、learned slot + K5 WPE（E2-W）及 calendar DOY + K5 WPE（E2-WPEonly）。
 
 ## 已验证完成
 
@@ -126,3 +126,23 @@
 - 真实 CUDA smoke：RTX 5060 Ti，batch16/16，参数量1,659,275，peak allocated 1,859,900,416 bytes，固定 batch loss `1.020774→0.006388`，checkpoint 精确重载。
 - smoke 只构造 Train/Validation，结果明确 `test_records_loaded=0`；没有注册 E2-WPEonly Test asset，没有读取或运行 Test。
 - 当前仍以 E0 为最佳；E2-WPEonly 状态为 `code_ready / not_run`，只有用户再次明确批准后才能启动正式训练。
+
+## 2026-07-23：E2-WPEonly 正式 Train/Validation 完成
+
+- 正式训练于 epoch 23 / global step 76521 达到 `bad_epochs=12` 后正常早停；best 为 epoch 11 / global step 36597。
+- 独立新进程从冻结 `best.pt` 完整重放 Validation 276，逐项匹配 checkpoint：maize IoU `0.9375021027`、F1 `0.9677430557`、Kappa `0.9241060406`，混淆矩阵 `[[4702039,175241],[253886,6437136]]`。
+- E2-WPEonly 相对 E0 的 Validation IoU/F1/Kappa 为 `-0.000845/-0.000450/+0.000129`；相对 E2-W 为 `+0.000591/+0.000315/+0.001294`。按预注册选择指标 maize IoU，E0 仍为当前最佳。
+- 结果支持“保留 calendar DOY 比替换为 learned `P_T` 更接近 E0”，但不支持“在 E0 上加入 K5 WPE 可提高 maize IoU”。单 seed 不声明显著性或跨 seed 稳健性。
+- 训练发生 4 次可审计 `wavelet.gamma` AMP 同批 backoff：`8192→4096→2048→1024→512`；失败尝试未推进 optimizer/scheduler/global step，每个完整 epoch 保持 3327 optimizer steps。
+- `best.pt` SHA256 `1C5F697D5FF12D114295D1FD359ADE1AA90342DE71DEAA3D5A3A1BD69130EBD8`；Validation 重放 JSON SHA256 `A8F4C028F19F2CF48C3661A143A8AE5DA49A48783AF21E8BE1DDDE546BD6C2A3`。
+- 未注册 E2-WPEonly Test asset，输出目录中不存在 `test_evaluation*`；本阶段未解析、加载或运行 Test。
+- 当前分支 `codex/e2-wpeonly`，HEAD `dfbff1bf91c4e80e7077f2686e6ecd155b20ae2e`；本次仅更新记录，尚未 stage、commit 或 push。
+
+## 2026-07-26: E2-WPEonly frozen Test completed
+
+- User authorized a one-time Test evaluation after frozen Train/Validation and Validation replay.
+- Registered the exact frozen asset (best.pt SHA256 `1C5F697D5FF12D114295D1FD359ADE1AA90342DE71DEAA3D5A3A1BD69130EBD8`, epoch 11, Validation IoU `0.9375021026721523`) with TDD coverage; full gate passed: 104 pytest tests, compileall, and `git diff --check`.
+- One pseudo-label Test and one independent ground-truth Test process completed across 305 tiles. Pseudo IoU/F1/Kappa: `0.926351/0.961768/0.894869`. Native30m reference: `0.780135/0.876490/0.777386`. Upsampled10m label-grid: `0.771875/0.871252/0.768449`.
+- All confusion matrices conserve supervised pixels; all result artifacts and snapshots are hash-recorded in `docs/EXPERIMENTS.md`.
+- E0 remains the current best model under the pre-registered Validation maize IoU selection rule. Test did not alter checkpoint, threshold, training, or selection.
+- No files staged, committed, pushed, reverted, or deleted.

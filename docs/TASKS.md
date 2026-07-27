@@ -1,6 +1,6 @@
 # Tasks
 
-更新时间：2026-07-19。仅勾选有验证证据的工作；E0/E1 正式 Train/Validation 与一次性 Test 评价均 completed。
+更新时间：2026-07-23。仅勾选有验证证据的工作；E2-WPEonly 正式 Train/Validation 与独立 Validation 重放 completed，Test 未运行。
 
 ## P0：数据与实验启动核验
 
@@ -87,5 +87,17 @@
 - [x] 验证 CUDA 前反向有限与 AMP 同批 backoff 不错误推进 optimizer/scheduler/global step。
 - [x] 通过全量 pytest 103 项、compileall、`git diff --check` 和真实 batch16/16 Train/Validation-only smoke。
 - [x] smoke 中固定 batch 过拟合、单 tile Validation、checkpoint 精确重载和 `test_records_loaded=0` 通过。
-- [ ] 用户明确批准后才启动正式 E2-WPEonly Train/Validation；当前不得读取或运行 Test。
-- [ ] 正式训练结束后新进程独立重放完整 Validation；在用户另行批准前仍不得读取 Test。
+- [x] 用户明确批准后启动正式 E2-WPEonly Train/Validation；epoch23 达到 patience=12 正常早停，best epoch11。
+- [x] 正式训练结束后新进程独立重放完整 Validation 276；指标、混淆矩阵与 checkpoint epoch11 逐项一致。
+- [x] 汇总 E0/E1/E2-W/E2-WPEonly 的统一 Validation 对比表，并按预注册 maize IoU 保留 E0。
+- [x] 记录 checkpoint、训练日志、AMP 事件和 Validation 重放 SHA256；确认 `test_evaluation*` 不存在。
+- [ ] 仅在用户另行明确批准后，才可为 E2-WPEonly 冻结 Test asset 并运行一次性 Test；当前不得读取 Test。
+- [ ] 用户审核本次 checkpoint 记录后，再单独确认 stage/commit/push。
+
+## 2026-07-26: E2-WPEonly frozen Test
+
+- [x] User explicitly authorized the Test boundary; registered the exact E2-WPEonly frozen asset with TDD.
+- [x] Passed 104 pytest tests, compileall, and `git diff --check` before Test access.
+- [x] Ran exactly one pseudo-label Test and one independent 30m ground-truth Test process, each covering 305 tiles; verified checkpoint metadata, confusion conservation, and artifact hashes.
+- [x] Recorded all Test metrics and E0/E2-W/E2-WPEonly comparison in `docs/EXPERIMENTS.md`; Test did not affect model selection.
+- [ ] User review required before any stage/commit/push; no automatic publication.

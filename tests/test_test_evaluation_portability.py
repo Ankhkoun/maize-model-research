@@ -32,6 +32,21 @@ def test_e2w_formal_frozen_asset_is_exact() -> None:
     assert asset.validation_maize_iou == 0.9369115428555538
 
 
+def test_e2_wpeonly_formal_frozen_asset_is_exact() -> None:
+    asset = FROZEN_TEST_ASSETS["E2-WPEonly"]
+
+    assert asset.experiment_id == "E2-WPEonly"
+    assert asset.checkpoint == Path(
+        "06_models/retrain_outputs/maize_model_research/"
+        "e2_wpeonly_tsvit_doy_mexican_hat_k5_seed42/best.pt"
+    )
+    assert asset.sha256 == (
+        "1C5F697D5FF12D114295D1FD359ADE1AA90342DE71DEAA3D5A3A1BD69130EBD8"
+    )
+    assert asset.epoch == 11
+    assert asset.validation_maize_iou == 0.9375021026721523
+
+
 def test_loader_resolves_relative_frozen_checkpoint_from_workspace(
     tmp_path: Path,
 ) -> None:
