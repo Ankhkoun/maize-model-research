@@ -54,6 +54,7 @@ import pytest
 import yaml
 
 import scripts.train_e0 as train_e0
+from scripts.evaluate_test import FROZEN_TEST_ASSETS
 from scripts.train_e0 import load_formal_config
 
 
@@ -85,3 +86,16 @@ def test_e3_formal_config_rejects_doy_lookup(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="no temporal position encoding"):
         load_formal_config(invalid_path)
+
+def test_e3_formal_entry_is_frozen_with_exact_test_asset() -> None:
+    config = load_formal_config(E3_PATH)
+
+    asset = FROZEN_TEST_ASSETS["E3-ImageWPE"]
+    assert asset.experiment_id == "E3-ImageWPE"
+    assert asset.checkpoint.as_posix().endswith(
+        "e3_tsvit_image_five_point_mexican_hat_k5_seed42_rerun1/best.pt"
+    )
+    assert asset.sha256 == "83F9128719C60C87CA07A044B22DCA3FF4264E23316CD0CA8D088BF7FDC9FB85"
+    assert asset.epoch == 15
+    assert asset.validation_maize_iou == 0.9384604671989814
+    assert config["experiment"]["id"] == asset.experiment_id

@@ -151,3 +151,8 @@
 - E3-ImageWPE is the strict image-only K5 wavelet ablation: no calendar DOY lookup and no learned temporal slot.
 - Targeted TDD tests passed, followed by a fresh full suite of 107 tests, compileall, and `git diff --check`.
 - A one-epoch CUDA smoke completed with Train/Validation-only records, 3327 optimizer steps, and no Test asset. The formal Train/Validation run is authorized next; Test remains prohibited until separately authorized after checkpoint selection and independent Validation replay.
+## 2026-07-27: E3-ImageWPE completed
+
+- The strict image-only K5 WPE experiment completed Train/Validation, an independent 276-tile Validation replay, and user-authorized one-time pseudo-label and annual 30m Test evaluations.
+- Frozen E3 best is epoch15, Validation maize IoU 0.938460. It is marginally above E0 on the frozen Validation metric and is therefore the numerical leader under the preregistered Validation-IoU rule; it is below E0 on pseudo-label and both annual-reference Test IoU measures, which are reporting-only and did not change that selection.
+- E3 Test asset is registered with its checkpoint SHA256. No further E3 Test reruns are allowed without an explicit new decision.

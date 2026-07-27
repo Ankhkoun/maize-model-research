@@ -101,6 +101,15 @@ FROZEN_TEST_ASSETS = {
         sha256="1C5F697D5FF12D114295D1FD359ADE1AA90342DE71DEAA3D5A3A1BD69130EBD8",
         epoch=11,
         validation_maize_iou=0.9375021026721523,
+    ),    "E3-ImageWPE": FrozenTestAsset(
+        experiment_id="E3-ImageWPE",
+        checkpoint=Path(
+            "06_models/retrain_outputs/maize_model_research/"
+            "e3_tsvit_image_five_point_mexican_hat_k5_seed42_rerun1/best.pt"
+        ),
+        sha256="83F9128719C60C87CA07A044B22DCA3FF4264E23316CD0CA8D088BF7FDC9FB85",
+        epoch=15,
+        validation_maize_iou=0.9384604671989814,
     ),
 }
 

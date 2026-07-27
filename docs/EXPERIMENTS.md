@@ -403,3 +403,36 @@ E2-WPEonly is closer to E0 than E2-W on pseudo-label Test agreement, but it does
 - Temporal route: `temporal_position_encoding.kind: none`; the model does not construct or query a DOY embedding and has no learned temporal slot.
 - Wavelet: content-only, five-point Mexican-hat K5 (`delta_t=-2,-1,0,1,2`), so the direct wavelet receptive field is five images (about 28 days for the seven-day acquisition schedule). The four-layer temporal Transformer remains global across all 26 frames.
 - Controls: Xinjiang 2021 Train 495 / Validation 276, 24x24 windows, patch2, seed42, batch16, frozen optimisation and Validation maize-IoU selection rule. Test is excluded from training, selection, and asset registration.
+### E3-ImageWPE: frozen Train/Validation and one-time Test (2026-07-27)
+
+- Architecture: `temporal_position_encoding.kind: none` + content-only five-point Mexican-hat K5 WPE; no calendar DOY embedding and no learned temporal slot. Train495/Validation276/Test305, seed42, 24x24/patch2, batch16, E0-matched schedule and Validation maize-IoU selection.
+- Formal rerun: epoch27 normal early stopping after best epoch15/global step49905. Frozen `best.pt` SHA256 `83F9128719C60C87CA07A044B22DCA3FF4264E23316CD0CA8D088BF7FDC9FB85`.
+- Independent Validation replay: 276 tiles, IoU/F1/Kappa `0.938460/0.968253/0.925708`, exactly matching the frozen epoch15 record; replay SHA256 `C5F3552B3C121BAD94BFAB686B8DB4BEBC3D2DBB7B491C24B7399315A1AFBC14`.
+- One-time pseudo-label Test: 305 tiles, IoU/F1/Kappa `0.925872/0.961509/0.895082`; JSON SHA256 `2D5BECC5FB0598A7B0768859E55F6BB929B8F64C7B59AA900903F0B003A461A0`.
+- One-time independent annual reference Test: native30m IoU/F1/Kappa `0.776375/0.874112/0.774001`; upsampled10m `0.767169/0.868247/0.764869`; JSON SHA256 `87FD9A7ADDD21134288A5A0D9CF5D179CE61EE5CB3A4B347A0A283F3AFA3E37F` / `D9FE848302030637D1C054E24B6E227A04E65A6BF83BBE237585D706B53A1B1C`.
+- Compared with E0: Validation IoU `+0.000113`; pseudo Test IoU `-0.001635`; native30m IoU `-0.008722`; upsampled10m IoU `-0.010417`. This single-seed result does not establish statistical significance. Test did not change the Validation selection rule; by that rule, E3 is the numerical leader because its frozen Validation IoU is higher by 0.000113.
+## 2026-07-27: all TSViT experiment metric summary
+
+All Validation rows are the independent replay of each frozen `best.pt` on the same 276 tiles / 11,568,302 supervised pixels. Test rows are one-time, frozen-checkpoint evaluations on the same 305 held-out tiles. Pseudo-label Test measures held-out agreement with training-style pseudo-labels; native30m and upsampled10m rows use the independent annual 30m reference and are reported at two fixed scales. Test results are reporting-only and did not choose checkpoints or hyperparameters.
+
+### Frozen Validation summary
+
+| Rank (IoU) | Experiment | Temporal encoding | WPE | maize IoU | maize F1 | Kappa | Delta IoU vs E0 |
+| ---: | --- | --- | --- | ---: | ---: | ---: | ---: |
+| 1 | E3-ImageWPE | none | content-only K5 | **0.938460** | **0.968253** | **0.925708** | +0.000113 |
+| 2 | E0 | calendar DOY lookup | off | 0.938347 | 0.968193 | 0.923977 | 0.000000 |
+| 3 | E2-WPEonly | calendar DOY lookup | content-only K5 | 0.937502 | 0.967743 | 0.924106 | -0.000845 |
+| 4 | E2-W | learned 26-slot P_T | content-only K5 | 0.936912 | 0.967428 | 0.922812 | -0.001436 |
+| 5 | E1 | calendar DOY lookup | continuous-DOY three-base | 0.933572 | 0.965645 | 0.919046 | -0.004776 |
+
+### Frozen Test summary
+
+| Experiment | Pseudo Test IoU / F1 / Kappa | Native30m IoU / F1 / Kappa | Upsampled10m IoU / F1 / Kappa |
+| --- | --- | --- | --- |
+| E0 | **0.927507 / 0.962390 / 0.894961** | **0.785097 / 0.879613 / 0.782022** | **0.777586 / 0.874879 / 0.773651** |
+| E1 | 0.921686 / 0.959247 / 0.888390 | 0.770246 / 0.870213 / 0.765665 | 0.761288 / 0.864467 / 0.756338 |
+| E2-W | 0.923915 / 0.960453 / 0.890835 | 0.781160 / 0.877136 / 0.779780 | 0.774401 / 0.872859 / 0.772183 |
+| E2-WPEonly | 0.926351 / 0.961768 / 0.894869 | 0.780135 / 0.876490 / 0.777386 | 0.771875 / 0.871252 / 0.768449 |
+| E3-ImageWPE | 0.925872 / 0.961509 / **0.895082** | 0.776375 / 0.874112 / 0.774001 | 0.767169 / 0.868247 / 0.764869 |
+
+**Interpretation:** E3 is the numerical leader under the pre-registered frozen Validation maize-IoU rule, but only by 0.000113 over E0 and for one seed. E0 is highest on all three reported Test IoU/F1 measures. These Test observations are not used to reverse the Validation-based selection, and no single-seed difference is a statistical-significance claim.
