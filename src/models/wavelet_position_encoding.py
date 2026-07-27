@@ -141,10 +141,12 @@ class LearnableWaveletPositionEncoding(nn.Module):
 
 class FivePointMexicanHatWaveletEncoding(nn.Module):
     """Content-only local Mexican-hat residual encoding for E2-W."""
-    def __init__(self, dim: int, scales_init: Sequence[float] = (0.75, 1.0, 1.25), scale_bounds: tuple[float, float] = (0.5, 1.5), shifts_init: Sequence[float] = (0.0, 0.0, 0.0), shift_bounds: tuple[float, float] = (-1.0, 1.0), gamma_init: float = 1.0e-3, eps: float = 1.0e-6) -> None:
+    def __init__(self, dim: int, scales_init: Sequence[float] = (0.75, 1.0, 1.25), scale_bounds: tuple[float, float] = (0.5, 1.5), shifts_init: Sequence[float] = (0.0, 0.0, 0.0), shift_bounds: tuple[float, float] = (-1.0, 1.0), gamma_init: float = 1.0e-3, eps: float = 1.0e-6, kernel_radius: int = 2) -> None:
         super().__init__()
         if dim <= 0 or len(scales_init) != 3 or len(shifts_init) != 3:
             raise ValueError('E2-W requires positive dim and exactly three bases')
+        if isinstance(kernel_radius, bool) or not isinstance(kernel_radius, int) or kernel_radius < 1:
+            raise ValueError('kernel_radius must be a positive integer')
         self.dim, self.num_bases, self.eps = dim, 3, eps
         self.scale_min, self.scale_max = map(float, scale_bounds)
         self.shift_min, self.shift_max = map(float, shift_bounds)
@@ -158,7 +160,8 @@ class FivePointMexicanHatWaveletEncoding(nn.Module):
         self.raw_gates = nn.Parameter(torch.zeros(3, dim))
         self.gamma = nn.Parameter(torch.tensor(gamma_init))
         self.input_norm, self.output_norm = nn.LayerNorm(dim), nn.LayerNorm(dim)
-        self.register_buffer('delta_t', torch.tensor([-2., -1., 0., 1., 2.]), persistent=False)
+        self.kernel_radius = kernel_radius
+        self.register_buffer('delta_t', torch.arange(-kernel_radius, kernel_radius + 1, dtype=torch.float32), persistent=False)
     @property
     def scales(self) -> torch.Tensor:
         return self.scale_min + (self.scale_max-self.scale_min)*torch.sigmoid(self.raw_scales)

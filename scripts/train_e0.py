@@ -50,6 +50,9 @@ FORMAL_OUTPUTS["E2-WPEonly"] = Path(
 FORMAL_OUTPUTS["E3-ImageWPE"] = Path(
     r"E:\maize_paper_workspace\06_models\retrain_outputs\maize_model_research\e3_tsvit_image_five_point_mexican_hat_k5_seed42"
 )
+FORMAL_OUTPUTS["E4-ImageWPE-K9"] = Path(
+    r"E:\maize_paper_workspace\06_models\retrain_outputs\maize_model_research\e4_tsvit_image_nine_point_mexican_hat_k9_seed42"
+)
 
 def formal_output_for(config: Mapping[str, Any]) -> Path:
     experiment_id = str(config["experiment"]["id"])
@@ -74,11 +77,11 @@ def load_formal_config(path: Path) -> dict[str, Any]:
     experiment_id = str(config["experiment"]["id"])
     if experiment_id not in FORMAL_OUTPUTS:
         raise ValueError(
-            "formal training requires experiment.id in {E0,E1,E2W,E2-WPEonly,E3-ImageWPE}"
+            "formal training requires experiment.id in {E0,E1,E2W,E2-WPEonly,E3-ImageWPE,E4-ImageWPE-K9}"
         )
     if config["model"]["image_size"] != 24 or config["model"]["patch_size"] != 2:
         raise ValueError(
-            "formal E0/E1/E2W/E2-WPEonly/E3-ImageWPE requires image_size=24 and patch_size=2"
+            "formal E0/E1/E2W/E2-WPEonly/E3-ImageWPE/E4-ImageWPE-K9 requires image_size=24 and patch_size=2"
         )
     wavelet = config["model"].get("wavelet", {})
     if experiment_id == "E0" and bool(wavelet.get("enabled", False)):
@@ -123,6 +126,15 @@ def load_formal_config(path: Path) -> dict[str, Any]:
         if wavelet != expected_e2_wpeonly_wavelet:
             raise ValueError(
                 "formal E3-ImageWPE WPE parameters differ from the frozen design"
+            )
+    expected_e4_wavelet = {**expected_e2_wpeonly_wavelet, "kernel_radius": 4}
+    if experiment_id == "E4-ImageWPE-K9":
+        temporal_position = config["model"].get("temporal_position_encoding", {})
+        if temporal_position != {"kind": "none"}:
+            raise ValueError("formal E4-ImageWPE-K9 requires no temporal position encoding")
+        if wavelet != expected_e4_wavelet:
+            raise ValueError(
+                "formal E4-ImageWPE-K9 WPE parameters differ from the frozen design"
             )
     expected_training = {
         "max_epochs": 100,
