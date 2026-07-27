@@ -146,3 +146,8 @@
 - All confusion matrices conserve supervised pixels; all result artifacts and snapshots are hash-recorded in `docs/EXPERIMENTS.md`.
 - E0 remains the current best model under the pre-registered Validation maize IoU selection rule. Test did not alter checkpoint, threshold, training, or selection.
 - No files staged, committed, pushed, reverted, or deleted.
+## 2026-07-27: E3-ImageWPE formal run authorized
+
+- E3-ImageWPE is the strict image-only K5 wavelet ablation: no calendar DOY lookup and no learned temporal slot.
+- Targeted TDD tests passed, followed by a fresh full suite of 107 tests, compileall, and `git diff --check`.
+- A one-epoch CUDA smoke completed with Train/Validation-only records, 3327 optimizer steps, and no Test asset. The formal Train/Validation run is authorized next; Test remains prohibited until separately authorized after checkpoint selection and independent Validation replay.

@@ -396,3 +396,10 @@ E2-WPEonly is closer to E0 than E2-W on pseudo-label Test agreement, but it does
 | `test_evaluation_ground_truth/run_snapshot.json` | `1E8328091A215E9D91081A64A45285532653E67E9C5618C99AA8A382C8BB6640` |
 | `test_evaluation_ground_truth/native30m/test_evaluation.json` | `A01610C35EDEF30F4C8DF1A9B7046A3868E3646A1F8F1CF1D83C4246E55C1FF0` |
 | `test_evaluation_ground_truth/upsampled10m/test_evaluation.json` | `6EF9B96A28714BDD7CB3D49DFDF1EA0B2588367FE2E8C00853EFBF2F0D788A24` |
+## E3-ImageWPE: image-only K5 wavelet, no DOY (2026-07-27)
+
+- Status: code verified; formal Train/Validation authorized and pending launch.
+- Configuration: `configs/models/tsvit_e3_image_wavelet_no_doy_mexican_hat_k5.yaml`.
+- Temporal route: `temporal_position_encoding.kind: none`; the model does not construct or query a DOY embedding and has no learned temporal slot.
+- Wavelet: content-only, five-point Mexican-hat K5 (`delta_t=-2,-1,0,1,2`), so the direct wavelet receptive field is five images (about 28 days for the seven-day acquisition schedule). The four-layer temporal Transformer remains global across all 26 frames.
+- Controls: Xinjiang 2021 Train 495 / Validation 276, 24x24 windows, patch2, seed42, batch16, frozen optimisation and Validation maize-IoU selection rule. Test is excluded from training, selection, and asset registration.
