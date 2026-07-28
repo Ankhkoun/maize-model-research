@@ -162,3 +162,9 @@
 - Best epoch 11 / step 36597; replayed Validation maize IoU/F1/Kappa `0.938988/0.968534/0.926002` on 276 tiles.
 - One-time Test: pseudo-label `0.927715/0.962502/0.896610`; native30m `0.776925/0.874460/0.772287`; upsampled10m `0.769763/0.869905/0.764588` (IoU/F1/Kappa).
 - E4 is the numerical single-seed Validation-IoU leader; Test results are reporting-only and do not claim significance.
+## 2026-07-28: E5-DOY-K9WPE completed
+
+- E5 combines E0 calendar DOY with content-only K9 WPE and completed formal Train/Validation, independent Validation replay, and user-authorized one-time Test evaluation.
+- Best epoch 14 / step 46578; replayed Validation maize IoU/F1/Kappa `0.934533/0.966159/0.918537` on 276 tiles.
+- One-time Test: pseudo-label `0.926526/0.961862/0.891992`; native30m `0.784859/0.879463/0.778732`; upsampled10m `0.776534/0.874212/0.770151` (IoU/F1/Kappa).
+- E5 nearly matches E0 on native30m IoU but remains below E0 on Validation and all reported IoU/F1/Kappa comparisons; Test is reporting-only and does not claim significance.

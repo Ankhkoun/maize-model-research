@@ -444,3 +444,11 @@ All Validation rows are the independent replay of each frozen `best.pt` on the s
 - One-time pseudo-label Test: 305 tiles, IoU/F1/Kappa `0.927715/0.962502/0.896610`.
 - One-time independent annual reference Test: native30m IoU/F1/Kappa `0.776925/0.874460/0.772287`; upsampled10m `0.769763/0.869905/0.764588`.
 - E4 is the numerical leader under the frozen single-seed Validation-IoU rule: +0.000527 vs E3 and +0.000640 vs E0. It is +0.000208 above E0 on pseudo-label Test IoU but below E0 on both annual-reference Test IoUs. Test remains reporting-only; no single-seed difference is a significance claim.
+## E5-DOY-K9WPE: calendar DOY plus nine-point Mexican-hat WPE (2026-07-28)
+
+- Architecture: E0 `doy_lookup` + content-only K9 Mexican-hat WPE (`kernel_radius=4`); no learned temporal slot.
+- Formal training: normal early stopping at epoch 26; frozen best epoch 14 / global step 46578. `best.pt` SHA256 `1648958D1563941EEE427B6222FCB4ACB283E6E2A84C76B83E1616B8C2181561`.
+- Independent Validation replay: 276 tiles, IoU/F1/Kappa `0.934533/0.966159/0.918537`, exactly matching the frozen epoch-14 record.
+- One-time pseudo-label Test: 305 tiles, IoU/F1/Kappa `0.926526/0.961862/0.891992`.
+- One-time annual reference Test: native30m IoU/F1/Kappa `0.784859/0.879463/0.778732`; upsampled10m `0.776534/0.874212/0.770151`.
+- E5 is below E0 on Validation and pseudo-label Test. On native30m it is -0.000238 IoU, -0.000149 F1 and -0.003290 Kappa below E0, while it improves native30m IoU by +0.007934 versus E4. Test remains reporting-only; this single-seed comparison has no significance claim.
