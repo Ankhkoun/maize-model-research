@@ -436,3 +436,11 @@ All Validation rows are the independent replay of each frozen `best.pt` on the s
 | E3-ImageWPE | 0.925872 / 0.961509 / **0.895082** | 0.776375 / 0.874112 / 0.774001 | 0.767169 / 0.868247 / 0.764869 |
 
 **Interpretation:** E3 is the numerical leader under the pre-registered frozen Validation maize-IoU rule, but only by 0.000113 over E0 and for one seed. E0 is highest on all three reported Test IoU/F1 measures. These Test observations are not used to reverse the Validation-based selection, and no single-seed difference is a statistical-significance claim.
+## E4-ImageWPE-K9: strict image-only nine-point Mexican-hat WPE (2026-07-28)
+
+- Architecture: `temporal_position_encoding.kind: none` + content-only K9 Mexican-hat WPE (`kernel_radius=4`, offsets `-4...+4`); no calendar DOY embedding and no learned temporal slot.
+- Formal training: normal early stopping at epoch 23; frozen best epoch 11 / global step 36597. `best.pt` SHA256 `E30E912C7ECEA90FAEFCCCF8444849F7F36A1137084FDDC9F70EC0F1204ABE14`.
+- Independent Validation replay: 276 tiles, IoU/F1/Kappa `0.938988/0.968534/0.926002`, exactly matching the frozen epoch-11 record.
+- One-time pseudo-label Test: 305 tiles, IoU/F1/Kappa `0.927715/0.962502/0.896610`.
+- One-time independent annual reference Test: native30m IoU/F1/Kappa `0.776925/0.874460/0.772287`; upsampled10m `0.769763/0.869905/0.764588`.
+- E4 is the numerical leader under the frozen single-seed Validation-IoU rule: +0.000527 vs E3 and +0.000640 vs E0. It is +0.000208 above E0 on pseudo-label Test IoU but below E0 on both annual-reference Test IoUs. Test remains reporting-only; no single-seed difference is a significance claim.

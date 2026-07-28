@@ -111,6 +111,16 @@ FROZEN_TEST_ASSETS = {
         epoch=15,
         validation_maize_iou=0.9384604671989814,
     ),
+    "E4-ImageWPE-K9": FrozenTestAsset(
+        experiment_id="E4-ImageWPE-K9",
+        checkpoint=Path(
+            "06_models/retrain_outputs/maize_model_research/"
+            "e4_tsvit_image_nine_point_mexican_hat_k9_seed42/best.pt"
+        ),
+        sha256="E30E912C7ECEA90FAEFCCCF8444849F7F36A1137084FDDC9F70EC0F1204ABE14",
+        epoch=11,
+        validation_maize_iou=0.9389875395835213,
+    ),
 }
 
 

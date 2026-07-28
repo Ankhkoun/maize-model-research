@@ -156,3 +156,9 @@
 - The strict image-only K5 WPE experiment completed Train/Validation, an independent 276-tile Validation replay, and user-authorized one-time pseudo-label and annual 30m Test evaluations.
 - Frozen E3 best is epoch15, Validation maize IoU 0.938460. It is marginally above E0 on the frozen Validation metric and is therefore the numerical leader under the preregistered Validation-IoU rule; it is below E0 on pseudo-label and both annual-reference Test IoU measures, which are reporting-only and did not change that selection.
 - E3 Test asset is registered with its checkpoint SHA256. No further E3 Test reruns are allowed without an explicit new decision.
+## 2026-07-28: E4-ImageWPE-K9 completed
+
+- Strict image-only K9 Mexican-hat WPE (`kernel_radius=4`, no DOY or learned temporal slots) completed formal Train/Validation, independent Validation replay, and user-authorized one-time Test evaluation.
+- Best epoch 11 / step 36597; replayed Validation maize IoU/F1/Kappa `0.938988/0.968534/0.926002` on 276 tiles.
+- One-time Test: pseudo-label `0.927715/0.962502/0.896610`; native30m `0.776925/0.874460/0.772287`; upsampled10m `0.769763/0.869905/0.764588` (IoU/F1/Kappa).
+- E4 is the numerical single-seed Validation-IoU leader; Test results are reporting-only and do not claim significance.
