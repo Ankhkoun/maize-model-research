@@ -92,6 +92,45 @@ FROZEN_TEST_ASSETS = {
         epoch=13,
         validation_maize_iou=0.9369115428555538,
     ),
+    "E2-WPEonly": FrozenTestAsset(
+        experiment_id="E2-WPEonly",
+        checkpoint=Path(
+            "06_models/retrain_outputs/maize_model_research/"
+            "e2_wpeonly_tsvit_doy_mexican_hat_k5_seed42/best.pt"
+        ),
+        sha256="1C5F697D5FF12D114295D1FD359ADE1AA90342DE71DEAA3D5A3A1BD69130EBD8",
+        epoch=11,
+        validation_maize_iou=0.9375021026721523,
+    ),    "E3-ImageWPE": FrozenTestAsset(
+        experiment_id="E3-ImageWPE",
+        checkpoint=Path(
+            "06_models/retrain_outputs/maize_model_research/"
+            "e3_tsvit_image_five_point_mexican_hat_k5_seed42_rerun1/best.pt"
+        ),
+        sha256="83F9128719C60C87CA07A044B22DCA3FF4264E23316CD0CA8D088BF7FDC9FB85",
+        epoch=15,
+        validation_maize_iou=0.9384604671989814,
+    ),
+    "E4-ImageWPE-K9": FrozenTestAsset(
+        experiment_id="E4-ImageWPE-K9",
+        checkpoint=Path(
+            "06_models/retrain_outputs/maize_model_research/"
+            "e4_tsvit_image_nine_point_mexican_hat_k9_seed42/best.pt"
+        ),
+        sha256="E30E912C7ECEA90FAEFCCCF8444849F7F36A1137084FDDC9F70EC0F1204ABE14",
+        epoch=11,
+        validation_maize_iou=0.9389875395835213,
+    ),
+    "E5-DOY-K9WPE": FrozenTestAsset(
+        experiment_id="E5-DOY-K9WPE",
+        checkpoint=Path(
+            "06_models/retrain_outputs/maize_model_research/"
+            "e5_tsvit_doy_nine_point_mexican_hat_k9_seed42/best.pt"
+        ),
+        sha256="1648958D1563941EEE427B6222FCB4ACB283E6E2A84C76B83E1616B8C2181561",
+        epoch=14,
+        validation_maize_iou=0.934533052755867,
+    ),
 }
 
 

@@ -1,4 +1,4 @@
-﻿"""Exact-style temporal-spatial ViT for direct semantic segmentation."""
+"""Exact-style temporal-spatial ViT for direct semantic segmentation."""
 
 from __future__ import annotations
 
@@ -141,11 +141,15 @@ class TSViTSegmentation(nn.Module):
         patch_dim = self.num_channels * self.patch_size**2
 
         self.patch_embedding = nn.Linear(patch_dim, self.dim)
-        self.doy_embedding = nn.Embedding(367, self.dim, padding_idx=0)
         temporal_position = dict(model_config.get("temporal_position_encoding", {}))
         self.temporal_position_kind = temporal_position.get("kind", "doy_lookup")
-        if self.temporal_position_kind not in {"doy_lookup", "learned_slot"}:
+        if self.temporal_position_kind not in {"doy_lookup", "learned_slot", "none"}:
             raise ValueError("unsupported temporal position encoding")
+        self.doy_embedding = (
+            nn.Embedding(367, self.dim, padding_idx=0)
+            if self.temporal_position_kind == "doy_lookup"
+            else None
+        )
         self.temporal_slot_embedding = (
             nn.Parameter(torch.randn(1, self.num_frames, self.dim))
             if self.temporal_position_kind == "learned_slot" else None
@@ -248,7 +252,7 @@ class TSViTSegmentation(nn.Module):
         ).permute(0, 2, 1, 3)
 
         safe_doy = torch.where(valid_mask, doy, torch.zeros_like(doy))
-        if valid_mask.any():
+        if self.temporal_position_kind == "doy_lookup" and valid_mask.any():
             valid_doy = safe_doy[valid_mask]
             is_integer = torch.isclose(
                 valid_doy, valid_doy.round(), atol=1e-4, rtol=0.0
@@ -264,12 +268,22 @@ class TSViTSegmentation(nn.Module):
             temporal_tokens = patch_tokens + position_tokens[:, None]
             if isinstance(self.wavelet, FivePointMexicanHatWaveletEncoding):
                 temporal_tokens = self.wavelet(patch_tokens, valid_mask) + position_tokens[:, None]
-        else:
+        elif self.temporal_position_kind == "doy_lookup":
+            assert self.doy_embedding is not None
             doy_indices = safe_doy.round().long()
             doy_tokens = self.doy_embedding(doy_indices).to(dtype=patch_tokens.dtype)
-            temporal_tokens = patch_tokens + doy_tokens[:, None]
-            if self.wavelet is not None:
+            if isinstance(self.wavelet, FivePointMexicanHatWaveletEncoding):
+                temporal_tokens = self.wavelet(patch_tokens, valid_mask) + doy_tokens[:, None]
+            else:
+                temporal_tokens = patch_tokens + doy_tokens[:, None]
+            if self.wavelet is not None and not isinstance(
+                self.wavelet, FivePointMexicanHatWaveletEncoding
+            ):
                 temporal_tokens = self.wavelet(temporal_tokens, doy, valid_mask)
+        elif isinstance(self.wavelet, FivePointMexicanHatWaveletEncoding):
+            temporal_tokens = self.wavelet(patch_tokens, valid_mask)
+        else:
+            temporal_tokens = patch_tokens
 
         temporal_tokens = temporal_tokens.reshape(
             batch * self.num_patches, time, self.dim

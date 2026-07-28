@@ -2,7 +2,7 @@
 
 展示规范：本总表中的连续型评价指标（loss、OA、precision、recall、F1、IoU、mIoU、macro-F1、Kappa、area ratio 及其差值）统一显示到小数点后 5 位；原始 JSON/CSV、哈希、整数计数和命令参数保持原样，以保证可复现。
 
-更新时间：2026-07-19。完整 checkpoint、概率图和正式推理结果保存在正式工作区，不提交 Git。
+更新时间：2026-07-23。完整 checkpoint、概率图和正式推理结果保存在正式工作区，不提交 Git。
 
 ## 已完成参考基线：Xinjiang 2021 PEACE-Net
 
@@ -297,3 +297,162 @@ E2-W Validation confusion matrix 为 `[[4663806,213474],[222120,6468902]]`，sup
 | `test_evaluation_ground_truth/run_snapshot.json` | `BA9496D1BA971692AE9C13D1B9737D4C837B7332015CDBD0B65B2C44DB32A916` |
 
 结论：E2-W 比 E1 更接近 E0，但在冻结 Validation、伪标签 Test 和独立原生30m Test 的 maize IoU/F1/Kappa 上均未超过 E0，因此继续保留 E0 为当前最佳模型。E2-W 同时将 DOY lookup 替换为 learned `P_T` 并加入 five-point WPE，结果不能解释为“单独增加 WPE”的效应。
+
+## E2-WPEonly：calendar DOY + content-only five-point Mexican-hat WPE
+
+| 字段 | 记录 |
+| --- | --- |
+| ID | E2-WPEonly |
+| 状态 | completed；epoch 23 / global step 76521 达到 patience=12 正常早停；best epoch 11 |
+| 日期 | 2026-07-22 至 2026-07-23 |
+| Git | 分支 `codex/e2-wpeonly`；训练 commit `dfbff1bf91c4e80e7077f2686e6ecd155b20ae2e`；训练启动时工作树 clean |
+| Config | `configs/models/tsvit_e2_wpeonly_doy_mexican_hat_k5.yaml`；SHA256 `DC02660A8CE4B32D8189875B1C79E2AB7DB617D1262276E83EF5E2FF3867E28B` |
+| Architecture | `FivePointMexicanHatWaveletEncoding(patch_tokens, valid_mask) + nn.Embedding(367,128)(calendar DOY)`；无 learned `P_T`；class token 不进入 WPE |
+| Controlled settings | 相对 E0 仅启用 E2-W 的 K5 WPE；Xinjiang 2021、Train495/Validation276/Test305、24x24/patch2、seed42、batch16/16、manifest、normalization、loss、optimizer、schedule 与 Validation 选择规则全部冻结 |
+| Parameters | 1,659,275 |
+| Environment | Python 3.11.14；PyTorch 2.10.0+cu128；CUDA 12.8；NVIDIA GeForce RTX 5060 Ti |
+| Data provenance | manifest SHA256 `79DCAAF1270D48B99FA50AF2A57548B50D7FD3E232620D11DC53E5E64C1177A8`；Train-only normalization SHA256 `1401DC9AAFE9A30A8916AB1A3C738080DB63D433C04716CA27FA5CABB51EC142` |
+| Training command | `D:\Anaconda3\envs\cawa\python.exe scripts\train_e0.py --paths configs\paths.local.yaml --manifest manifests\xinjiang_2021_e0_e1.csv --normalization manifests\xinjiang_2021_train_normalization.json --config configs\models\tsvit_e2_wpeonly_doy_mexican_hat_k5.yaml --output-dir <formal-output> --physical-batch-size 16` |
+| Output | `E:\maize_paper_workspace\06_models\retrain_outputs\maize_model_research\e2_wpeonly_tsvit_doy_mexican_hat_k5_seed42` |
+| Best checkpoint | epoch 11 / global step 36597；`best.pt` SHA256 `1C5F697D5FF12D114295D1FD359ADE1AA90342DE71DEAA3D5A3A1BD69130EBD8` |
+| Terminal checkpoint | epoch 23 / global step 76521 / bad_epochs 12；`last.pt` SHA256 `8D3326BD1A7A67B086F5DD10C7B08E08F87163988E3DCE1A5DF28D6DA7A25D03` |
+| Training records | `metrics.jsonl` SHA256 `CFE98CC3CC282E55CE79A25320BEFB742D56BD53FCB2A35ECBEAC65FBD8D11D7`；`amp_events.jsonl` SHA256 `3300700A4CA0BF21DA97906C19D8D5696EAA54AB27E7650921170BB55A591395`；`run_snapshot.json` SHA256 `DEC532CC7250E53F285E0C5C284791C56CC0ABD20703987A6AF787D5917D5473` |
+| AMP audit | 4 次 `wavelet.gamma` Inf 同批 backoff：epoch 1/17/22/22，scale `8192→4096→2048→1024→512`；失败尝试不推进 optimizer/scheduler/global_step，完整 epoch 均为 3327 optimizer steps |
+| Learned wavelet at best | scales `[0.902953,1.151017,1.343706]`；shifts `[0.307982,0.254910,0.241562]`；gamma `-0.106165`；sigmoid gates min/mean/max `0.307117/0.493668/0.685920` |
+| CUDA smoke | RTX 5060 Ti；physical/effective batch16/16；8-step fixed-batch loss `1.020774→0.006388`；peak allocated `1,859,900,416` bytes；checkpoint logits 精确重载；1-tile Validation 入口通过；`test_records_loaded=0`；结果 SHA256 `FA47332C2EA2F3C9E995C741B51CA79DB5CEDCF3141DD67E1A9B771A05678024` |
+| Verification | 新增目标测试 8 passed；相关回归 34 passed；fresh 全量 pytest 103 passed；compileall 与 `git diff --check` exit0 |
+| Selection rule | 仅完整 Validation maize IoU；E0 固定参考为 `0.938347` |
+| Test boundary | 未为 E2-WPEonly 注册冻结 Test asset；输出中不存在 `test_evaluation*`；训练与独立重放不解析、不加载、不运行 Test |
+
+### 冻结 Validation 重放
+
+训练结束后在新进程中从冻结 `best.pt` 完整重放 Validation 276，结果与 checkpoint epoch 11 记录逐项一致。重放文件 `validation_replay_best_epoch11_20260723/validation_replay.json` SHA256 为 `A8F4C028F19F2CF48C3661A143A8AE5DA49A48783AF21E8BE1DDDE546BD6C2A3`；run snapshot SHA256 为 `78931F76517E70A02D642B9742773C64468A9BFD0AFED8CD6AB220954A31FA23`。
+
+| 指标 | E2-WPEonly Validation | E0 Validation | E2-WPEonly−E0 |
+| --- | ---: | ---: | ---: |
+| loss | 0.09627 | 0.09189 | +0.00437 |
+| OA | 0.96290 | 0.96300 | -0.00010 |
+| precision | 0.97350 | 0.96283 | +0.01067 |
+| recall | 0.96206 | 0.97362 | -0.01156 |
+| F1 | 0.96774 | 0.96819 | -0.00045 |
+| maize IoU | 0.93750 | 0.93835 | -0.00085 |
+| mIoU | 0.92694 | 0.92683 | +0.00011 |
+| Kappa | 0.92411 | 0.92398 | +0.00013 |
+| area ratio | 0.98825 | 1.01121 | -0.02296 |
+
+E2-WPEonly Validation confusion matrix 为 `[[4702039,175241],[253886,6437136]]`，supervised pixels `11568302`，evaluated tiles `276`。结果提高了 precision、降低了 recall；按预注册 selection metric maize IoU，未超过 E0。
+
+## 正式 TSViT 实验统一 Validation 对比
+
+下表只使用各实验冻结 `best.pt` 的独立新进程完整 Validation 重放，统一为 276 tiles、11,568,302 supervised pixels；不混入任何 Test 结果。
+
+| 排名（IoU） | 实验 | Temporal encoding | WPE | 参数量 | Best / stop epoch | maize IoU | ΔIoU vs E0 | maize F1 | Kappa | 同批 AMP backoffs |
+| ---: | --- | --- | --- | ---: | --- | ---: | ---: | ---: | ---: | ---: |
+| 1 | E0 | calendar DOY lookup | off | 1,658,507 | 13 / 25 | **0.93835** | 0.00000 | **0.96819** | 0.92398 | n/a（策略引入前） |
+| 2 | E2-WPEonly | calendar DOY lookup | content-only K5 | 1,659,275 | 11 / 23 | 0.93750 | -0.00085 | 0.96774 | **0.92411** | 4 |
+| 3 | E2-W | learned 26-slot `P_T` | content-only K5 | 1,662,603 | 13 / 25 | 0.93691 | -0.00144 | 0.96743 | 0.92281 | 6 |
+| 4 | E1 | calendar DOY lookup | continuous-DOY three-base | 1,707,531 | 8 / 22 | 0.93357 | -0.00478 | 0.96564 | 0.91905 | 4 |
+
+E2-WPEonly 相对 E2-W 的 IoU/F1/Kappa 为 `+0.00059/+0.00031/+0.00129`，说明在相同 K5 WPE 家族下保留 calendar DOY 比 learned `P_T` 更接近 E0；但 E2-WPEonly 相对 E0 的 IoU 仍为 `-0.00085`，因此当前 seed42 结果不支持 K5 WPE 改善 E0。E0 继续作为预注册选择指标下的最佳模型；Kappa 的微小反向差异不改变选择规则。所有结论均为单 seed 受控描述，不声明统计显著性。
+
+## E2-WPEonly: frozen one-time Test evaluation (2026-07-26)
+
+User explicitly authorized this Test evaluation only after the formal Train/Validation run and its independent Validation replay had completed. The frozen asset binds `best.pt` to SHA256 `1C5F697D5FF12D114295D1FD359ADE1AA90342DE71DEAA3D5A3A1BD69130EBD8`, epoch 11, global step 36597, and Validation maize IoU `0.9375021026721523`. `scripts/evaluate_test.py` and `scripts/evaluate_test_ground_truth.py` were each run once in independent CUDA processes. No threshold search, checkpoint selection, model change, training, or rerun occurred.
+
+| Metric | Pseudo-label Test | Native 30m reference | Upsampled 10m label grid |
+| --- | ---: | ---: | ---: |
+| loss | 0.123780 | 0.350641 | 0.391850 |
+| OA | 0.951332 | 0.889991 | 0.885624 |
+| maize precision | 0.976371 | 0.893590 | 0.890663 |
+| maize recall | 0.947595 | 0.860032 | 0.852668 |
+| maize F1 | 0.961768 | 0.876490 | 0.871252 |
+| maize IoU | 0.926351 | 0.780135 | 0.771875 |
+| mIoU | 0.900435 | 0.799846 | 0.792645 |
+| Kappa | 0.894869 | 0.777386 | 0.768449 |
+| supervised pixels | 12,295,425 | 2,203,625 | 19,832,625 |
+| evaluated tiles | 305 | 305 | 305 |
+| confusion matrix | `[[4170439,182149],[416247,7526590]]` | `[[1101042,102430],[139989,860164]]` | `[[9889048,942200],[1326183,7675194]]` |
+
+All three confusion matrices exactly conserve their reported supervised-pixel totals. The pseudo-label result is a spatially held-out agreement diagnostic, not independent ground-truth accuracy. The native30m and upsampled10m rows use the annual `y_patch_30m.npy` reference labels with `label != 255`, no cropland mask, no exclusion list, and fixed threshold 0.5.
+
+| Metric | E0 | E2-W | E2-WPEonly | E2-WPEonly - E0 |
+| --- | ---: | ---: | ---: | ---: |
+| Pseudo Test maize IoU | 0.927507 | 0.923915 | 0.926351 | -0.001156 |
+| Pseudo Test maize F1 | 0.962390 | 0.960453 | 0.961768 | -0.000622 |
+| Pseudo Test Kappa | 0.894961 | 0.890835 | 0.894869 | -0.000092 |
+| Native30m maize IoU | 0.785097 | 0.781160 | 0.780135 | -0.004962 |
+| Native30m maize F1 | 0.879612 | 0.877136 | 0.876490 | -0.003122 |
+| Native30m Kappa | 0.782022 | 0.779780 | 0.777386 | -0.004636 |
+| Upsampled10m maize IoU | 0.777586 | 0.774401 | 0.771875 | -0.005711 |
+| Upsampled10m maize F1 | 0.874878 | 0.872859 | 0.871252 | -0.003626 |
+| Upsampled10m Kappa | 0.773651 | 0.772183 | 0.768449 | -0.005202 |
+
+E2-WPEonly is closer to E0 than E2-W on pseudo-label Test agreement, but it does not exceed E0 under any reported metric. Against the independent annual 30m reference it is also below E2-W on IoU/F1/Kappa. This is a single-seed controlled result; it does not establish statistical significance. Per the preregistered selection rule, E0 remains the current best model because its Validation maize IoU remains highest; Test did not alter any selection decision.
+
+| Output artifact | SHA256 |
+| --- | --- |
+| `test_evaluation/run_snapshot.json` | `AB0732863A8A24909FE622B97BD61426A03BA9D38D8FD0FB10FF2D9B174CEA71` |
+| `test_evaluation/test_evaluation.json` | `91523FAB31A312867D5D48DEBAD32AC659BFDFEC3ABA4B98910F0B67F5DC9929` |
+| `test_evaluation_ground_truth/run_snapshot.json` | `1E8328091A215E9D91081A64A45285532653E67E9C5618C99AA8A382C8BB6640` |
+| `test_evaluation_ground_truth/native30m/test_evaluation.json` | `A01610C35EDEF30F4C8DF1A9B7046A3868E3646A1F8F1CF1D83C4246E55C1FF0` |
+| `test_evaluation_ground_truth/upsampled10m/test_evaluation.json` | `6EF9B96A28714BDD7CB3D49DFDF1EA0B2588367FE2E8C00853EFBF2F0D788A24` |
+## E3-ImageWPE: image-only K5 wavelet, no DOY (2026-07-27)
+
+- Status: code verified; formal Train/Validation authorized and pending launch.
+- Configuration: `configs/models/tsvit_e3_image_wavelet_no_doy_mexican_hat_k5.yaml`.
+- Temporal route: `temporal_position_encoding.kind: none`; the model does not construct or query a DOY embedding and has no learned temporal slot.
+- Wavelet: content-only, five-point Mexican-hat K5 (`delta_t=-2,-1,0,1,2`), so the direct wavelet receptive field is five images (about 28 days for the seven-day acquisition schedule). The four-layer temporal Transformer remains global across all 26 frames.
+- Controls: Xinjiang 2021 Train 495 / Validation 276, 24x24 windows, patch2, seed42, batch16, frozen optimisation and Validation maize-IoU selection rule. Test is excluded from training, selection, and asset registration.
+### E3-ImageWPE: frozen Train/Validation and one-time Test (2026-07-27)
+
+- Architecture: `temporal_position_encoding.kind: none` + content-only five-point Mexican-hat K5 WPE; no calendar DOY embedding and no learned temporal slot. Train495/Validation276/Test305, seed42, 24x24/patch2, batch16, E0-matched schedule and Validation maize-IoU selection.
+- Formal rerun: epoch27 normal early stopping after best epoch15/global step49905. Frozen `best.pt` SHA256 `83F9128719C60C87CA07A044B22DCA3FF4264E23316CD0CA8D088BF7FDC9FB85`.
+- Independent Validation replay: 276 tiles, IoU/F1/Kappa `0.938460/0.968253/0.925708`, exactly matching the frozen epoch15 record; replay SHA256 `C5F3552B3C121BAD94BFAB686B8DB4BEBC3D2DBB7B491C24B7399315A1AFBC14`.
+- One-time pseudo-label Test: 305 tiles, IoU/F1/Kappa `0.925872/0.961509/0.895082`; JSON SHA256 `2D5BECC5FB0598A7B0768859E55F6BB929B8F64C7B59AA900903F0B003A461A0`.
+- One-time independent annual reference Test: native30m IoU/F1/Kappa `0.776375/0.874112/0.774001`; upsampled10m `0.767169/0.868247/0.764869`; JSON SHA256 `87FD9A7ADDD21134288A5A0D9CF5D179CE61EE5CB3A4B347A0A283F3AFA3E37F` / `D9FE848302030637D1C054E24B6E227A04E65A6BF83BBE237585D706B53A1B1C`.
+- Compared with E0: Validation IoU `+0.000113`; pseudo Test IoU `-0.001635`; native30m IoU `-0.008722`; upsampled10m IoU `-0.010417`. This single-seed result does not establish statistical significance. Test did not change the Validation selection rule; by that rule, E3 is the numerical leader because its frozen Validation IoU is higher by 0.000113.
+## 2026-07-27: all TSViT experiment metric summary
+
+All Validation rows are the independent replay of each frozen `best.pt` on the same 276 tiles / 11,568,302 supervised pixels. Test rows are one-time, frozen-checkpoint evaluations on the same 305 held-out tiles. Pseudo-label Test measures held-out agreement with training-style pseudo-labels; native30m and upsampled10m rows use the independent annual 30m reference and are reported at two fixed scales. Test results are reporting-only and did not choose checkpoints or hyperparameters.
+
+### Frozen Validation summary
+
+| Rank (IoU) | Experiment | Temporal encoding | WPE | maize IoU | maize F1 | Kappa | Delta IoU vs E0 |
+| ---: | --- | --- | --- | ---: | ---: | ---: | ---: |
+| 1 | E4-ImageWPE-K9 | none | content-only K9 | **0.938988** | **0.968534** | **0.926002** | +0.000640 |
+| 2 | E3-ImageWPE | none | content-only K5 | 0.938460 | 0.968253 | 0.925708 | +0.000113 |
+| 3 | E0 | calendar DOY lookup | off | 0.938347 | 0.968193 | 0.923977 | 0.000000 |
+| 4 | E2-WPEonly | calendar DOY lookup | content-only K5 | 0.937502 | 0.967743 | 0.924106 | -0.000845 |
+| 5 | E2-W | learned 26-slot P_T | content-only K5 | 0.936912 | 0.967428 | 0.922812 | -0.001436 |
+| 6 | E5-DOY-K9WPE | calendar DOY lookup | content-only K9 | 0.934533 | 0.966159 | 0.918537 | -0.003814 |
+| 7 | E1 | calendar DOY lookup | continuous-DOY three-base | 0.933572 | 0.965645 | 0.919046 | -0.004776 |
+
+### Frozen Test summary
+
+| Experiment | Pseudo Test IoU / F1 / Kappa | Native30m IoU / F1 / Kappa | Upsampled10m IoU / F1 / Kappa |
+| --- | --- | --- | --- |
+| E0 | 0.927507 / 0.962390 / 0.894961 | **0.785097 / 0.879613 / 0.782022** | **0.777586 / 0.874879 / 0.773651** |
+| E1 | 0.921686 / 0.959247 / 0.888390 | 0.770246 / 0.870213 / 0.765665 | 0.761288 / 0.864467 / 0.756338 |
+| E2-W | 0.923915 / 0.960453 / 0.890835 | 0.781160 / 0.877136 / 0.779780 | 0.774401 / 0.872859 / 0.772183 |
+| E2-WPEonly | 0.926351 / 0.961768 / 0.894869 | 0.780135 / 0.876490 / 0.777386 | 0.771875 / 0.871252 / 0.768449 |
+| E3-ImageWPE | 0.925872 / 0.961509 / 0.895082 | 0.776375 / 0.874112 / 0.774001 | 0.767169 / 0.868247 / 0.764869 |
+| E4-ImageWPE-K9 | **0.927715 / 0.962502 / 0.896610** | 0.776925 / 0.874460 / 0.772287 | 0.769763 / 0.869905 / 0.764588 |
+| E5-DOY-K9WPE | 0.926526 / 0.961862 / 0.891992 | 0.784859 / 0.879463 / 0.778732 | 0.776534 / 0.874212 / 0.770151 |
+
+**Interpretation:** E4 is the numerical leader under the pre-registered frozen Validation maize-IoU rule. E0 remains highest on both annual-reference Test scales and all three reported native30m IoU/F1/Kappa measures. E5 is second on native30m IoU, only -0.000238 behind E0, but is lower on Validation and pseudo-label Test. Test is reporting-only and did not choose checkpoints or hyperparameters; no single-seed difference is a statistical-significance claim.
+## E4-ImageWPE-K9: strict image-only nine-point Mexican-hat WPE (2026-07-28)
+
+- Architecture: `temporal_position_encoding.kind: none` + content-only K9 Mexican-hat WPE (`kernel_radius=4`, offsets `-4...+4`); no calendar DOY embedding and no learned temporal slot.
+- Formal training: normal early stopping at epoch 23; frozen best epoch 11 / global step 36597. `best.pt` SHA256 `E30E912C7ECEA90FAEFCCCF8444849F7F36A1137084FDDC9F70EC0F1204ABE14`.
+- Independent Validation replay: 276 tiles, IoU/F1/Kappa `0.938988/0.968534/0.926002`, exactly matching the frozen epoch-11 record.
+- One-time pseudo-label Test: 305 tiles, IoU/F1/Kappa `0.927715/0.962502/0.896610`.
+- One-time independent annual reference Test: native30m IoU/F1/Kappa `0.776925/0.874460/0.772287`; upsampled10m `0.769763/0.869905/0.764588`.
+- E4 is the numerical leader under the frozen single-seed Validation-IoU rule: +0.000527 vs E3 and +0.000640 vs E0. It is +0.000208 above E0 on pseudo-label Test IoU but below E0 on both annual-reference Test IoUs. Test remains reporting-only; no single-seed difference is a significance claim.
+## E5-DOY-K9WPE: calendar DOY plus nine-point Mexican-hat WPE (2026-07-28)
+
+- Architecture: E0 `doy_lookup` + content-only K9 Mexican-hat WPE (`kernel_radius=4`); no learned temporal slot.
+- Formal training: normal early stopping at epoch 26; frozen best epoch 14 / global step 46578. `best.pt` SHA256 `1648958D1563941EEE427B6222FCB4ACB283E6E2A84C76B83E1616B8C2181561`.
+- Independent Validation replay: 276 tiles, IoU/F1/Kappa `0.934533/0.966159/0.918537`, exactly matching the frozen epoch-14 record.
+- One-time pseudo-label Test: 305 tiles, IoU/F1/Kappa `0.926526/0.961862/0.891992`.
+- One-time annual reference Test: native30m IoU/F1/Kappa `0.784859/0.879463/0.778732`; upsampled10m `0.776534/0.874212/0.770151`.
+- E5 is below E0 on Validation and pseudo-label Test. On native30m it is -0.000238 IoU, -0.000149 F1 and -0.003290 Kappa below E0, while it improves native30m IoU by +0.007934 versus E4. Test remains reporting-only; this single-seed comparison has no significance claim.
