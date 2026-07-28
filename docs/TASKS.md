@@ -101,3 +101,10 @@
 - [x] Ran exactly one pseudo-label Test and one independent 30m ground-truth Test process, each covering 305 tiles; verified checkpoint metadata, confusion conservation, and artifact hashes.
 - [x] Recorded all Test metrics and E0/E2-W/E2-WPEonly comparison in `docs/EXPERIMENTS.md`; Test did not affect model selection.
 - [ ] User review required before any stage/commit/push; no automatic publication.
+## 2026-07-28: E3/E4/E5 wavelet ablations
+
+- [x] E3 strict image-only K5 completed formal Train/Validation, independent replay, and user-authorized one-time Test.
+- [x] E4 strict image-only K9 completed formal Train/Validation, independent replay, and user-authorized one-time Test.
+- [x] E5 calendar DOY + K9 completed formal Train/Validation, independent replay, and user-authorized one-time Test.
+- [x] Refresh the E0–E5 unified Validation and frozen Test comparison tables.
+- [ ] In a separate seed-replication task, preregister the target models, non-42 seed(s), selection rule, and Test boundary before training.

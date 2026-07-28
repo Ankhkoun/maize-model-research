@@ -419,23 +419,27 @@ All Validation rows are the independent replay of each frozen `best.pt` on the s
 
 | Rank (IoU) | Experiment | Temporal encoding | WPE | maize IoU | maize F1 | Kappa | Delta IoU vs E0 |
 | ---: | --- | --- | --- | ---: | ---: | ---: | ---: |
-| 1 | E3-ImageWPE | none | content-only K5 | **0.938460** | **0.968253** | **0.925708** | +0.000113 |
-| 2 | E0 | calendar DOY lookup | off | 0.938347 | 0.968193 | 0.923977 | 0.000000 |
-| 3 | E2-WPEonly | calendar DOY lookup | content-only K5 | 0.937502 | 0.967743 | 0.924106 | -0.000845 |
-| 4 | E2-W | learned 26-slot P_T | content-only K5 | 0.936912 | 0.967428 | 0.922812 | -0.001436 |
-| 5 | E1 | calendar DOY lookup | continuous-DOY three-base | 0.933572 | 0.965645 | 0.919046 | -0.004776 |
+| 1 | E4-ImageWPE-K9 | none | content-only K9 | **0.938988** | **0.968534** | **0.926002** | +0.000640 |
+| 2 | E3-ImageWPE | none | content-only K5 | 0.938460 | 0.968253 | 0.925708 | +0.000113 |
+| 3 | E0 | calendar DOY lookup | off | 0.938347 | 0.968193 | 0.923977 | 0.000000 |
+| 4 | E2-WPEonly | calendar DOY lookup | content-only K5 | 0.937502 | 0.967743 | 0.924106 | -0.000845 |
+| 5 | E2-W | learned 26-slot P_T | content-only K5 | 0.936912 | 0.967428 | 0.922812 | -0.001436 |
+| 6 | E5-DOY-K9WPE | calendar DOY lookup | content-only K9 | 0.934533 | 0.966159 | 0.918537 | -0.003814 |
+| 7 | E1 | calendar DOY lookup | continuous-DOY three-base | 0.933572 | 0.965645 | 0.919046 | -0.004776 |
 
 ### Frozen Test summary
 
 | Experiment | Pseudo Test IoU / F1 / Kappa | Native30m IoU / F1 / Kappa | Upsampled10m IoU / F1 / Kappa |
 | --- | --- | --- | --- |
-| E0 | **0.927507 / 0.962390 / 0.894961** | **0.785097 / 0.879613 / 0.782022** | **0.777586 / 0.874879 / 0.773651** |
+| E0 | 0.927507 / 0.962390 / 0.894961 | **0.785097 / 0.879613 / 0.782022** | **0.777586 / 0.874879 / 0.773651** |
 | E1 | 0.921686 / 0.959247 / 0.888390 | 0.770246 / 0.870213 / 0.765665 | 0.761288 / 0.864467 / 0.756338 |
 | E2-W | 0.923915 / 0.960453 / 0.890835 | 0.781160 / 0.877136 / 0.779780 | 0.774401 / 0.872859 / 0.772183 |
 | E2-WPEonly | 0.926351 / 0.961768 / 0.894869 | 0.780135 / 0.876490 / 0.777386 | 0.771875 / 0.871252 / 0.768449 |
-| E3-ImageWPE | 0.925872 / 0.961509 / **0.895082** | 0.776375 / 0.874112 / 0.774001 | 0.767169 / 0.868247 / 0.764869 |
+| E3-ImageWPE | 0.925872 / 0.961509 / 0.895082 | 0.776375 / 0.874112 / 0.774001 | 0.767169 / 0.868247 / 0.764869 |
+| E4-ImageWPE-K9 | **0.927715 / 0.962502 / 0.896610** | 0.776925 / 0.874460 / 0.772287 | 0.769763 / 0.869905 / 0.764588 |
+| E5-DOY-K9WPE | 0.926526 / 0.961862 / 0.891992 | 0.784859 / 0.879463 / 0.778732 | 0.776534 / 0.874212 / 0.770151 |
 
-**Interpretation:** E3 is the numerical leader under the pre-registered frozen Validation maize-IoU rule, but only by 0.000113 over E0 and for one seed. E0 is highest on all three reported Test IoU/F1 measures. These Test observations are not used to reverse the Validation-based selection, and no single-seed difference is a statistical-significance claim.
+**Interpretation:** E4 is the numerical leader under the pre-registered frozen Validation maize-IoU rule. E0 remains highest on both annual-reference Test scales and all three reported native30m IoU/F1/Kappa measures. E5 is second on native30m IoU, only -0.000238 behind E0, but is lower on Validation and pseudo-label Test. Test is reporting-only and did not choose checkpoints or hyperparameters; no single-seed difference is a statistical-significance claim.
 ## E4-ImageWPE-K9: strict image-only nine-point Mexican-hat WPE (2026-07-28)
 
 - Architecture: `temporal_position_encoding.kind: none` + content-only K9 Mexican-hat WPE (`kernel_radius=4`, offsets `-4...+4`); no calendar DOY embedding and no learned temporal slot.
