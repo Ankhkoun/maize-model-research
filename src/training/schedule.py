@@ -48,7 +48,10 @@ class WarmupCosineSchedule:
 
     def _set_lr(self, value: float) -> None:
         for group in self.optimizer.param_groups:
-            group["lr"] = value
+            scale = float(group.get("lr_scale", 1.0))
+            if scale <= 0.0:
+                raise ValueError("optimizer lr_scale must be positive")
+            group["lr"] = value * scale
 
     def step(self) -> float:
         self.step_num = min(self.step_num + 1, self.total_steps)

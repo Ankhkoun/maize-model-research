@@ -9,7 +9,11 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
-from .wavelet_position_encoding import FivePointMexicanHatWaveletEncoding, LearnableWaveletPositionEncoding
+from .fixed_window_wpe import FixedWindowMexicanHatWaveletEncoding
+from .wavelet_position_encoding import (
+    FivePointMexicanHatWaveletEncoding,
+    LearnableWaveletPositionEncoding,
+)
 
 
 class _TransformerBlock(nn.Module):
@@ -143,11 +147,25 @@ class TSViTSegmentation(nn.Module):
         self.patch_embedding = nn.Linear(patch_dim, self.dim)
         temporal_position = dict(model_config.get("temporal_position_encoding", {}))
         self.temporal_position_kind = temporal_position.get("kind", "doy_lookup")
-        if self.temporal_position_kind not in {"doy_lookup", "learned_slot", "none"}:
+        if self.temporal_position_kind not in {
+            "doy_lookup",
+            "cyclic_sincos",
+            "learned_slot",
+            "none",
+        }:
             raise ValueError("unsupported temporal position encoding")
         self.doy_embedding = (
             nn.Embedding(367, self.dim, padding_idx=0)
             if self.temporal_position_kind == "doy_lookup"
+            else None
+        )
+        self.cyclic_period = float(temporal_position.get("period", 365.0))
+        self.cyclic_amplitude = float(temporal_position.get("amplitude", 0.10))
+        if self.cyclic_period <= 0.0 or self.cyclic_amplitude <= 0.0:
+            raise ValueError("cyclic DOY period and amplitude must be positive")
+        self.cyclic_projection = (
+            nn.Linear(2, self.dim, bias=False)
+            if self.temporal_position_kind == "cyclic_sincos"
             else None
         )
         self.temporal_slot_embedding = (
@@ -175,10 +193,16 @@ class TSViTSegmentation(nn.Module):
         wavelet_config = dict(model_config.get("wavelet", {}))
         wavelet_enabled = bool(wavelet_config.pop("enabled", False))
         wavelet_kind = wavelet_config.pop("kind", "legacy")
-        self.wavelet: LearnableWaveletPositionEncoding | None
+        self.wavelet: (
+            LearnableWaveletPositionEncoding
+            | FixedWindowMexicanHatWaveletEncoding
+            | None
+        )
         if wavelet_enabled:
             self.wavelet = (
-                FivePointMexicanHatWaveletEncoding(dim=self.dim, **wavelet_config)
+                FixedWindowMexicanHatWaveletEncoding(dim=self.dim, **wavelet_config)
+                if wavelet_kind == "fixed_window_mexican_hat"
+                else FivePointMexicanHatWaveletEncoding(dim=self.dim, **wavelet_config)
                 if wavelet_kind == "five_point_mexican_hat"
                 else LearnableWaveletPositionEncoding(dim=self.dim, **wavelet_config)
             )
@@ -266,21 +290,45 @@ class TSViTSegmentation(nn.Module):
             assert self.temporal_slot_embedding is not None
             position_tokens = self.temporal_slot_embedding.to(dtype=patch_tokens.dtype)
             temporal_tokens = patch_tokens + position_tokens[:, None]
-            if isinstance(self.wavelet, FivePointMexicanHatWaveletEncoding):
+            if isinstance(
+                self.wavelet,
+                (FivePointMexicanHatWaveletEncoding, FixedWindowMexicanHatWaveletEncoding),
+            ):
                 temporal_tokens = self.wavelet(patch_tokens, valid_mask) + position_tokens[:, None]
         elif self.temporal_position_kind == "doy_lookup":
             assert self.doy_embedding is not None
             doy_indices = safe_doy.round().long()
             doy_tokens = self.doy_embedding(doy_indices).to(dtype=patch_tokens.dtype)
-            if isinstance(self.wavelet, FivePointMexicanHatWaveletEncoding):
+            if isinstance(
+                self.wavelet,
+                (FivePointMexicanHatWaveletEncoding, FixedWindowMexicanHatWaveletEncoding),
+            ):
                 temporal_tokens = self.wavelet(patch_tokens, valid_mask) + doy_tokens[:, None]
             else:
                 temporal_tokens = patch_tokens + doy_tokens[:, None]
             if self.wavelet is not None and not isinstance(
-                self.wavelet, FivePointMexicanHatWaveletEncoding
+                self.wavelet,
+                (FivePointMexicanHatWaveletEncoding, FixedWindowMexicanHatWaveletEncoding),
             ):
                 temporal_tokens = self.wavelet(temporal_tokens, doy, valid_mask)
-        elif isinstance(self.wavelet, FivePointMexicanHatWaveletEncoding):
+        elif self.temporal_position_kind == "cyclic_sincos":
+            assert self.cyclic_projection is not None
+            phase = 2.0 * torch.pi * safe_doy / self.cyclic_period
+            cyclic = torch.stack((torch.sin(phase), torch.cos(phase)), dim=-1)
+            doy_tokens = self.cyclic_amplitude * self.cyclic_projection(cyclic).to(
+                dtype=patch_tokens.dtype
+            )
+            if isinstance(
+                self.wavelet,
+                (FivePointMexicanHatWaveletEncoding, FixedWindowMexicanHatWaveletEncoding),
+            ):
+                temporal_tokens = self.wavelet(patch_tokens, valid_mask) + doy_tokens[:, None]
+            else:
+                temporal_tokens = patch_tokens + doy_tokens[:, None]
+        elif isinstance(
+            self.wavelet,
+            (FivePointMexicanHatWaveletEncoding, FixedWindowMexicanHatWaveletEncoding),
+        ):
             temporal_tokens = self.wavelet(patch_tokens, valid_mask)
         else:
             temporal_tokens = patch_tokens

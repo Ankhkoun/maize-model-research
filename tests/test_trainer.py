@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import torch
@@ -131,3 +132,68 @@ def test_fit_writes_last_and_strict_best_checkpoint(tmp_path: Path) -> None:
     assert (tmp_path / "last.pt").is_file()
     assert (tmp_path / "best.pt").is_file()
     assert (tmp_path / "metrics.jsonl").read_text(encoding="utf-8").count("\n") == 2
+
+
+def test_fixed_window_run_writes_dedicated_diagnostic_log(tmp_path: Path) -> None:
+    class _DiagnosticWavelet(torch.nn.Module):
+        def reset_diagnostics(self):
+            return None
+
+        def diagnostics(self):
+            return {
+                "effective_residual_ratio": 0.01,
+                "gamma": 0.02,
+                "fusion": {
+                    "K5": {"mean": 0.4},
+                    "K13": {"mean": 0.3},
+                    "K25": {"mean": 0.3},
+                },
+            }
+
+    model = _TinyModel()
+    model.wavelet = _DiagnosticWavelet()
+    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-2, weight_decay=0.0)
+    schedule = WarmupCosineSchedule(optimizer, 10, 1, 1e-4, 1e-2, 1e-5)
+
+    def evaluator(*args, **kwargs):
+        del args, kwargs
+        return {"maize_iou": 0.5, "loss": 1.0}
+
+    trainer = E0Trainer(
+        model,
+        _TinyTiles(),
+        object(),
+        optimizer,
+        schedule,
+        output_dir=tmp_path,
+        device=torch.device("cpu"),
+        config=TrainerConfig(
+            max_epochs=1,
+            window_size=4,
+            stride=4,
+            physical_batch_size=4,
+            effective_batch_size=4,
+            amp=False,
+            warmup_epochs=0,
+            patience=2,
+        ),
+        run_config={"experiment": {"id": "E12-USA-FixedWindow-WPE"}},
+        evaluator=evaluator,
+    )
+
+    trainer.fit(CheckpointState())
+    record = json.loads(
+        (tmp_path / "usa_fixed_window_wpe_metrics.jsonl").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert record["wpe"]["validation"]["effective_residual_ratio"] == 0.01
+    assert record["wpe"]["validation"]["gamma"] == 0.02
+    assert set(record["wpe"]["validation"]["fusion"]) == {"K5", "K13", "K25"}
+    assert record["gpu_memory"]["max_allocated_bytes"] == 0
+    assert record["epoch_seconds"] >= 0.0
+    assert record["checkpoint_status"] == {
+        "best_saved": True,
+        "last_saved": True,
+        "should_stop": False,
+    }

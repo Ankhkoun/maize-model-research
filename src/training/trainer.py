@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import math
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Mapping
@@ -337,9 +338,23 @@ class E0Trainer:
         self.state = initial_state or CheckpointState()
         stopper = EarlyStopping(self.config.warmup_epochs, self.config.patience)
         stopper.restore(self.state.best_metric, self.state.bad_epochs)
+        best_epoch = 0
         for epoch in range(self.state.epoch + 1, self.config.max_epochs + 1):
+            epoch_start = time.perf_counter()
+            if self.device.type == "cuda":
+                torch.cuda.reset_peak_memory_stats(self.device)
             self.state.epoch = epoch
+            wavelet = getattr(self.model, "wavelet", None)
+            if wavelet is not None and hasattr(wavelet, "reset_diagnostics"):
+                wavelet.reset_diagnostics()
             train_metrics = self.train_epoch(epoch)
+            train_wpe = (
+                wavelet.diagnostics()
+                if wavelet is not None and hasattr(wavelet, "diagnostics")
+                else None
+            )
+            if wavelet is not None and hasattr(wavelet, "reset_diagnostics"):
+                wavelet.reset_diagnostics()
             validation_metrics = self.evaluator(
                 self.model,
                 self.validation_dataset,
@@ -352,16 +367,48 @@ class E0Trainer:
             )
             selected = float(validation_metrics["maize_iou"])
             improved, should_stop = stopper.update(epoch, selected)
+            if improved:
+                best_epoch = epoch
             self.state.best_metric = stopper.best_metric
             self.state.bad_epochs = stopper.bad_epochs
+            validation_wpe = (
+                wavelet.diagnostics()
+                if wavelet is not None and hasattr(wavelet, "diagnostics")
+                else None
+            )
             record = {
                 "epoch": epoch,
                 "global_step": self.state.global_step,
                 "train": train_metrics,
                 "validation": validation_metrics,
                 "best_maize_iou": self.state.best_metric,
+                "best_epoch": best_epoch,
                 "bad_epochs": self.state.bad_epochs,
+                "learning_rates": {
+                    str(group.get("group_name", index)): float(group["lr"])
+                    for index, group in enumerate(self.optimizer.param_groups)
+                },
+                "epoch_seconds": time.perf_counter() - epoch_start,
+                "gpu_memory": {
+                    "max_allocated_bytes": (
+                        int(torch.cuda.max_memory_allocated(self.device))
+                        if self.device.type == "cuda"
+                        else 0
+                    ),
+                    "max_reserved_bytes": (
+                        int(torch.cuda.max_memory_reserved(self.device))
+                        if self.device.type == "cuda"
+                        else 0
+                    ),
+                },
+                "checkpoint_status": {
+                    "best_saved": improved,
+                    "last_saved": True,
+                    "should_stop": should_stop,
+                },
             }
+            if train_wpe is not None or validation_wpe is not None:
+                record["wpe"] = {"train": train_wpe, "validation": validation_wpe}
             print(json.dumps(record, sort_keys=True), flush=True)
             with (self.output_dir / "metrics.jsonl").open("a", encoding="utf-8") as stream:
                 stream.write(json.dumps(record, sort_keys=True) + "\n")
@@ -386,6 +433,17 @@ class E0Trainer:
                 self.run_config,
                 metrics=record,
             )
+            experiment_id = self.run_config.get("experiment", {}).get("id")
+            if experiment_id in {
+                "E12-USA-FixedWindow-WPE",
+                "E12-USA-FixedWindow-WPE-FixedGamma02",
+                "E13-USA-CyclicDOY-FixedWindow-WPE-FixedGamma02",
+                "E16-USA-CyclicDOY-FixedWindow-WPE-K5-K9-K17-FixedGamma02",
+            }:
+                with (self.output_dir / "usa_fixed_window_wpe_metrics.jsonl").open(
+                    "a", encoding="utf-8"
+                ) as stream:
+                    stream.write(json.dumps(record, sort_keys=True) + "\n")
             if should_stop:
                 break
         return self.state

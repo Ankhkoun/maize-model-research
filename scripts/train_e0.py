@@ -56,6 +56,25 @@ FORMAL_OUTPUTS["E4-ImageWPE-K9"] = Path(
 FORMAL_OUTPUTS["E5-DOY-K9WPE"] = Path(
     r"E:\maize_paper_workspace\06_models\retrain_outputs\maize_model_research\e5_tsvit_doy_nine_point_mexican_hat_k9_seed42"
 )
+FORMAL_OUTPUTS["E12-USA-FixedWindow-WPE"] = ROOT / "outputs/usa_e12_fixed_window_wpe_seed42"
+FORMAL_OUTPUTS["E12-USA-FixedWindow-WPE-FixedGamma02"] = (
+    ROOT / "outputs/usa_e12_fixed_window_wpe_fixedgamma02_seed42"
+)
+FORMAL_OUTPUTS["E13-USA-CyclicDOY-FixedWindow-WPE-FixedGamma02"] = (
+    ROOT / "outputs/usa_e13_cyclic_doy_fixed_window_wpe_fixedgamma02_seed42"
+)
+FORMAL_OUTPUTS[
+    "E16-USA-CyclicDOY-FixedWindow-WPE-K5-K9-K17-FixedGamma02"
+] = ROOT / "outputs/usa_e16_cyclic_doy_fixed_window_wpe_k5_k9_k17_fixedgamma02_seed42"
+
+USA_FIXED_WINDOW_EXPERIMENTS = frozenset(
+    {
+        "E12-USA-FixedWindow-WPE",
+        "E12-USA-FixedWindow-WPE-FixedGamma02",
+        "E13-USA-CyclicDOY-FixedWindow-WPE-FixedGamma02",
+        "E16-USA-CyclicDOY-FixedWindow-WPE-K5-K9-K17-FixedGamma02",
+    }
+)
 
 def formal_output_for(config: Mapping[str, Any]) -> Path:
     experiment_id = str(config["experiment"]["id"])
@@ -147,6 +166,35 @@ def load_formal_config(path: Path) -> dict[str, Any]:
             raise ValueError(
                 "formal E5-DOY-K9WPE WPE parameters differ from the frozen design"
             )
+    if experiment_id in USA_FIXED_WINDOW_EXPERIMENTS:
+        temporal_position = config["model"].get("temporal_position_encoding", {})
+        expected_wavelet = {
+            "enabled": True,
+            "kind": "fixed_window_mexican_hat",
+            "radii": [2, 6, 12],
+            "sigmas": [1.0, 3.0, 6.0],
+            "shifts": [0.0, 0.0, 0.0],
+            "gamma_init": 0.02,
+            "gamma_max": 0.2,
+            "eps": 1e-6,
+            "boundary_mode": "masked_renormalized",
+            "force_fp32": True,
+        }
+        if experiment_id != "E12-USA-FixedWindow-WPE":
+            expected_wavelet["gamma_parameterization"] = "fixed_positive"
+        if experiment_id.startswith("E16"):
+            expected_wavelet.update(
+                {"radii": [2, 4, 8], "sigmas": [1.0, 2.0, 4.0]}
+            )
+        expected_temporal = (
+            {"kind": "none"}
+            if experiment_id.startswith("E12")
+            else {"kind": "cyclic_sincos", "period": 365.0, "amplitude": 0.1}
+        )
+        if temporal_position != expected_temporal or wavelet != expected_wavelet:
+            raise ValueError(
+                "formal USA fixed-window WPE configuration differs from the frozen design"
+            )
     expected_training = {
         "max_epochs": 100,
         "effective_batch_size": 16,
@@ -165,6 +213,16 @@ def load_formal_config(path: Path) -> dict[str, Any]:
         "amp_max_backoffs_per_batch": 6,
         "amp_growth_interval": 1_000_000,
     }
+    if experiment_id in USA_FIXED_WINDOW_EXPERIMENTS:
+        expected_training = {
+            **expected_training,
+            "effective_batch_size": 32,
+            "physical_batch_candidates": [32, 16, 8, 4, 2],
+            "amp": False,
+            "amp_init_scale": 128.0,
+            "amp_min_scale": 16.0,
+            "wavelet_lr_scale": 0.25,
+        }
     if config["training"] != expected_training:
         raise ValueError("formal E0/E1 training parameters differ from the frozen design")
     if config["evaluation"] != {
@@ -232,6 +290,45 @@ def optimizer_steps_per_epoch(
     if steps <= 0:
         raise ValueError("Train labels contain no supervised windows")
     return steps
+
+
+def build_optimizer(
+    model: torch.nn.Module, training: Mapping[str, Any]
+) -> torch.optim.AdamW:
+    """Build AdamW, optionally applying the frozen WPE learning-rate multiplier."""
+    wavelet_lr_scale = training.get("wavelet_lr_scale")
+    if wavelet_lr_scale is None:
+        return torch.optim.AdamW(
+            model.parameters(),
+            lr=training["base_lr"],
+            weight_decay=training["weight_decay"],
+        )
+    wavelet_lr_scale = float(wavelet_lr_scale)
+    if not 0.0 < wavelet_lr_scale < 1.0:
+        raise ValueError("wavelet_lr_scale must lie strictly between 0 and 1")
+    backbone_parameters: list[torch.nn.Parameter] = []
+    wavelet_parameters: list[torch.nn.Parameter] = []
+    for name, parameter in model.named_parameters():
+        target = wavelet_parameters if name.startswith("wavelet.") else backbone_parameters
+        target.append(parameter)
+    if not backbone_parameters or not wavelet_parameters:
+        raise ValueError("separate WPE learning rate requires both parameter groups")
+    return torch.optim.AdamW(
+        [
+            {
+                "params": backbone_parameters,
+                "group_name": "backbone",
+                "lr_scale": 1.0,
+            },
+            {
+                "params": wavelet_parameters,
+                "group_name": "wavelet",
+                "lr_scale": wavelet_lr_scale,
+            },
+        ],
+        lr=training["base_lr"],
+        weight_decay=training["weight_decay"],
+    )
 
 
 def _first_training_batch(dataset: Any, size: int, window_size: int, stride: int):
@@ -350,7 +447,14 @@ def main(argv: Sequence[str] | None = None) -> None:
     with args.normalization.open("r", encoding="utf-8") as stream:
         normalization = json.load(stream)
     train_dataset, validation_dataset = build_train_validation_datasets(
-        args.manifest, workspace_root, normalization
+        args.manifest,
+        workspace_root,
+        normalization,
+        expected_counts=(
+            (400, 321)
+            if config["experiment"]["id"] in USA_FIXED_WINDOW_EXPERIMENTS
+            else (495, 276)
+        ),
     )
     seed = int(config["experiment"]["seed"])
     _seed_everything(seed)
@@ -386,9 +490,7 @@ def main(argv: Sequence[str] | None = None) -> None:
         effective_batch=training["effective_batch_size"],
         ignore_index=data_config["ignore_index"],
     )
-    optimizer = torch.optim.AdamW(
-        model.parameters(), lr=training["base_lr"], weight_decay=training["weight_decay"]
-    )
+    optimizer = build_optimizer(model, training)
     scheduler = WarmupCosineSchedule(
         optimizer,
         total_steps=steps_per_epoch * max_epochs,
@@ -408,6 +510,9 @@ def main(argv: Sequence[str] | None = None) -> None:
         "physical_batch_size": physical_batch,
         "steps_per_epoch": steps_per_epoch,
         "seed": seed,
+        "train_records_loaded": len(train_dataset),
+        "validation_records_loaded": len(validation_dataset),
+        "test_records_loaded": 0,
     }
     trainer_config = TrainerConfig(
         max_epochs=max_epochs,
