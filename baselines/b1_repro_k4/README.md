@@ -2,7 +2,7 @@
 
 AgriFM + NativeFPN 分类基线，附带 A4 时序可靠性专家的辅助监督。这里整理的是 **B1-repro-K4**，用于复现2026-10-12的统一源码基线。
 
-**本版本的MoE只预测可靠性并接受辅助损失监督。它没有通过残差、FiLM或加权CE直接进入分类决策。** 不应将本仓库描述为“已证明专家分类融合有效”的模型。代码整理保持核心实现字节不变，审查发现和限制见[实现说明](docs/IMPLEMENTATION.md)。
+MoE分支预测可靠性并接受辅助损失监督，分类结果由AgriFM特征与NativeFPN解码器生成。代码整理保持核心实现字节不变，审查发现和限制见[实现说明](docs/IMPLEMENTATION.md)。
 
 这不是所有历史实验中测试数字最高的架构；与历史原B1、R1的区别见[版本与指标对应关系](docs/VERSION_SELECTION.md)。
 
@@ -37,7 +37,6 @@ docs/                  数据要求、实现限制、历史参照与源码hash
 | 优化 | AdamW，decoder lr=1.5e-4，reliability lr=1e-4，wd=1e-4 |
 | 批量 / 精度 | 单GPU，micro batch=1，累积8步，BF16 |
 | 种子 | 42 |
-| FiLM / feature residual / phase / weighted CE | 均关闭 |
 
 ## 环境
 
