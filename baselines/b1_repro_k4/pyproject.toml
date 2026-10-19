@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "usa-b1-repro"
+version = "0.1.0"
+description = "Frozen USA AgriFM B1 baseline with auxiliary A4 reliability supervision"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["torch", "numpy", "PyYAML"]
+
+[project.optional-dependencies]
+geo = ["rasterio", "affine"]
+
+[tool.setuptools.packages.find]
+include = ["af2_usa_a4_rf_20261005*"]

@@ -1,0 +1,7 @@
+# Activate a CUDA-compatible PyTorch environment before installation.
+# Required imports; this file is not a lock of the historical environment.
+torch
+numpy
+PyYAML
+rasterio
+affine

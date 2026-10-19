@@ -1,0 +1,33 @@
+name: B1-repro CPU contracts
+on:
+  push:
+    paths:
+      - 'baselines/b1_repro_k4/**'
+      - '.github/workflows/b1-repro.yml'
+  pull_request:
+    paths:
+      - 'baselines/b1_repro_k4/**'
+      - '.github/workflows/b1-repro.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: baselines/b1_repro_k4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install CPU dependencies
+        run: |
+          python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install numpy PyYAML
+      - name: Run focused contracts
+        env:
+          OMP_NUM_THREADS: '2'
+          MKL_NUM_THREADS: '2'
+        run: python -m unittest discover -s tests -v

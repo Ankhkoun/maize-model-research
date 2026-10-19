@@ -1,0 +1,59 @@
+experiment_id: USA-A4-Ablation-B1-Repro-K4-Seed42-20261012
+experiment:
+  mode: full
+data:
+  root: data/maize_paper_workspace
+  protocol_assets: protocol_assets
+  agrifm_source: vendor/AgriFM_source
+  pretrained: weights/AgriFM.pth
+  output: runs/b1_repro_k4_seed42
+model:
+  num_experts: 4
+  reliability_input: a4_cube
+  use_checkpointing: true
+  window_chunk_size: 1
+  use_support_features: true
+  use_patch_metadata: true
+  warmup_backbone: false
+  enable_phase_supervision: false
+  enable_film: false
+  enable_feature_residual: false
+  feature_residual_max: 0.1
+  feature_residual_ratio_max: 0.0
+training:
+  seed: 42
+  precision: bf16
+  micro_batch: 1
+  gradient_accumulation: 8
+  stage_epochs:
+    A: 3
+    M: 3
+    J: 3
+    C: 0
+    D: 0
+  decoder_lr: 0.00015
+  reliability_lr: 0.0001
+  backbone_lr: 2.0e-06
+  weight_decay: 0.0001
+  lambda_reliability: 1.0
+  reliability_weight_floor: 0.15
+  reliability_ramp_epochs: 3
+  feature_residual_ramp_epochs: 3
+  phase_loss_weight: 0.0
+  use_reliability_weighted_ce: false
+  ema: 0.95
+  target_mode: gmm
+  gmm_steps: 40
+  gmm_min_samples: 32
+  gmm_min_separation: 0.08
+  gmm_min_weight: 0.03
+  spatial_augmentation: true
+  max_train_samples: null
+  num_workers: 2
+  persistent_workers: true
+  prefetch_factor: 2
+  log_every: 20
+evaluation:
+  selection_metric: miou
+  threshold_policy: fixed_0.50
+  grid: native30m
