@@ -456,3 +456,7 @@ All Validation rows are the independent replay of each frozen `best.pt` on the s
 - One-time pseudo-label Test: 305 tiles, IoU/F1/Kappa `0.926526/0.961862/0.891992`.
 - One-time annual reference Test: native30m IoU/F1/Kappa `0.784859/0.879463/0.778732`; upsampled10m `0.776534/0.874212/0.770151`.
 - E5 is below E0 on Validation and pseudo-label Test. On native30m it is -0.000238 IoU, -0.000149 F1 and -0.003290 Kappa below E0, while it improves native30m IoU by +0.007934 versus E4. Test remains reporting-only; this single-seed comparison has no significance claim.
+
+## 2026-10-19：USA B1-repro-K4历史实验代码归档
+
+实验ID：`USA-A4-Ablation-B1-Repro-K4-Seed42-20261012`。代码：`baselines/b1_repro_k4/`。seed42，K=4，A3→M3→J3，单GPU micro batch=1、累积8步、BF16；GMM40、EMA=.95，FiLM/残差/phase/weighted CE关闭。历史GTdev Derived85 mIoU=`0.8791804512971124`，CDL Native30m mIoU=`0.8774247062503876`。两种评估网格不同，不可混为同一指标。完整协议、样本数、checkpoint hash与版本对应关系见子项目文档。本条登记既有实验来源与代码发布，不代表新训练或重新测试。

@@ -108,3 +108,9 @@
 - [x] E5 calendar DOY + K9 completed formal Train/Validation, independent replay, and user-authorized one-time Test.
 - [x] Refresh the E0–E5 unified Validation and frozen Test comparison tables.
 - [ ] In a separate seed-replication task, preregister the target models, non-42 seed(s), selection rule, and Test boundary before training.
+
+## 2026-10-19：B1-repro-K4发布
+
+- [x] 整理模型、训练、GTdev/CDL/预测入口与复现文档。
+- [x] 为B1子项目配置独立CPU契约工作流。
+- [ ] 在目标计算环境按固定协议完成独立复现并核对历史指标；此次发布不宣称完成该任务。

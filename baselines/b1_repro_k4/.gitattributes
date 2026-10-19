@@ -1,0 +1,9 @@
+* text=auto
+*.sh text eol=lf
+*.md text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+# Never normalize the frozen implementation: its byte hashes are provenance.
+af2_usa_a4_rf_20261005/*.py -text
+protocol_assets/* -text
+vendor/AgriFM_source/AgriFM/models/video_swin_transformer.py -text
