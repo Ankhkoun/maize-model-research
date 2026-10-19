@@ -4,9 +4,7 @@
 
 ## USA B1-repro-K4
 
-独立复现代码位于[baselines/b1_repro_k4](baselines/b1_repro_k4/README.md)，包括[模型架构](baselines/b1_repro_k4/docs/ARCHITECTURE.md)、模型导出入口、训练入口和GTdev/CDL/预测入口。请先进入该目录，再按其README配置环境、数据与权重。
-
-固定协议为seed42、K=4、A3→M3→J3，共9轮。历史GTdev Derived85 mIoU为87.9180%，CDL Native30m mIoU为87.7425%；这是历史参照，不能与下述Xinjiang实验跨数据集直接比较，也不表示此次上传重新完成训练。该版MoE用于可靠性辅助监督。版本、指标、源码hash和已知实现限制均记录在子项目文档中。
+[B1-repro-K4模型与训练代码](baselines/b1_repro_k4/README.md)位于`baselines/b1_repro_k4/`，包含AgriFM编码器、NativeFPN解码器、时序可靠性专家和训练配置。进入该目录后按README准备环境、数据并启动训练。
 
 ## 研究主线
 
