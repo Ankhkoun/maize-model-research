@@ -1,0 +1,7 @@
+# Historical GPU versions: evidence/validation/environment.json
+# Install the PyTorch build matching your CUDA runtime separately.
+torch
+numpy
+PyYAML
+rasterio
+affine

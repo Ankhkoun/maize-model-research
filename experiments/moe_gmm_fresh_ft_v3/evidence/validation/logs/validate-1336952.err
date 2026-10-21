@@ -1,0 +1,48 @@
+test_all_invalid_is_finite (test_v2.Contracts.test_all_invalid_is_finite) ... ok
+test_bce_detached_target_and_finite_gradient (test_v2.Contracts.test_bce_detached_target_and_finite_gradient) ... ok
+test_configuration_rejects_silent_knobs (test_v2.Contracts.test_configuration_rejects_silent_knobs) ... ok
+test_density_matches_original (test_v2.Contracts.test_density_matches_original) ... ok
+test_early_stopping_and_top3 (test_v2.Contracts.test_early_stopping_and_top3) ... ok
+test_equal_loss_has_no_position_rank (test_v2.Contracts.test_equal_loss_has_no_position_rank) ... ok
+test_formula_and_controls (test_v2.Contracts.test_formula_and_controls) ... ok
+test_full_schedule_and_preheat_targets (test_v2.Contracts.test_full_schedule_and_preheat_targets) ... ok
+test_no_observations_use_unit_ce_and_skip_bce (test_v2.Contracts.test_no_observations_use_unit_ce_and_skip_bce) ... ok
+test_target_source_detach_and_ema (test_v2.Contracts.test_target_source_detach_and_ema) ... ok
+test_unavailable_uses_prior_and_permutation (test_v2.Contracts.test_unavailable_uses_prior_and_permutation) ... ok
+test_weight_parameters_and_no_gradient_to_prior (test_v2.Contracts.test_weight_parameters_and_no_gradient_to_prior) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 5.978s
+
+OK
+/data/run01/scze971/Qwen/conda-envs/vllm-nightly/lib/python3.12/site-packages/torch/functional.py:504: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorShape.cpp:4215.)
+  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
+/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/source_snapshot/reliability.py:49: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  self.temporal_rel = nn.TransformerEncoder(layer, num_layers=1)
+/data/run01/scze971/Qwen/conda-envs/vllm-nightly/lib/python3.12/site-packages/torch/_dynamo/eval_frame.py:1446: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. Starting in PyTorch 2.9, calling checkpoint without use_reentrant will raise an exception. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
+  return fn(*args, **kwargs)
+/data/run01/scze971/Qwen/conda-envs/vllm-nightly/lib/python3.12/site-packages/torch/utils/checkpoint.py:238: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  check_backward_validity(args)
+/data/run01/scze971/Qwen/conda-envs/vllm-nightly/lib/python3.12/site-packages/torch/functional.py:504: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorShape.cpp:4215.)
+  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
+/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/source_snapshot/reliability.py:49: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  self.temporal_rel = nn.TransformerEncoder(layer, num_layers=1)
+/data/run01/scze971/Qwen/conda-envs/vllm-nightly/lib/python3.12/site-packages/torch/_dynamo/eval_frame.py:1446: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. Starting in PyTorch 2.9, calling checkpoint without use_reentrant will raise an exception. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
+  return fn(*args, **kwargs)
+/data/run01/scze971/Qwen/conda-envs/vllm-nightly/lib/python3.12/site-packages/torch/utils/checkpoint.py:238: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  check_backward_validity(args)
+/data/run01/scze971/Qwen/conda-envs/vllm-nightly/lib/python3.12/site-packages/torch/functional.py:504: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorShape.cpp:4215.)
+  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
+/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/source_snapshot/reliability.py:49: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  self.temporal_rel = nn.TransformerEncoder(layer, num_layers=1)
+Traceback (most recent call last):
+  File "/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/validate_gpu.py", line 28, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/validate_gpu.py", line 19, in main
+    assets=USAAssets(cfg['data']['root'],ROOT/'protocol_assets/normalization_train1296.json')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/source_snapshot/data.py", line 202, in __init__
+    self.workspace = workspace.resolve()
+                     ^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'resolve'

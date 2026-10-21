@@ -1,0 +1,281 @@
+{
+  "time": 1792555775.7775497,
+  "jobs": {
+    "training": "1336991",
+    "freeze": "1336992",
+    "testing": "1336993",
+    "summary": "1336994",
+    "max_concurrent_gpus": 2
+  },
+  "preflight": {
+    "passed": true,
+    "reviewed_source_files": 29,
+    "source_manifest": {
+      "README.md": "d906b586f56633b9347263a5f4c4f8c6bb9fb753d4079f8e7c3661b474577981",
+      "campaign.py": "738b52fe50558255a9414c4927d2bf0ae936704129a3c5c7b1f6a7a28ea99044",
+      "common.py": "d6a1eddfecf54bc22e99b27c99279b186957eccd91cd9bf0b0ed49f330b49122",
+      "configs/joint_frozen_seed42.yaml": "484d72cc5fc1a9ceef9f773a470aa9897fd15b8ab8dd55aabc3815806d1e0a69",
+      "configs/joint_fullft_seed42.yaml": "cdf520edd0c11b86e3ac0cf91e94e48d35d8a7715689d73a62c67377e90095a7",
+      "configuration.py": "05554a6f38f6e38564339f453dd25b308a232f5ea93d025004d4caa14c2cd9e7",
+      "evaluate.py": "ca99f5948a406b75f287ffa3da09e2f64567ee5732dd357715eddf1bf762871d",
+      "experiment.py": "1a07825e25bf10552f9dbb81a1adf6836e683e873ba729bdda9586d2ac8f7ae8",
+      "fusion.py": "d852299bfbcb6b56fff7bdd231e39329c87bc67fbcc68e1a0b3c2ded20a49e44",
+      "objectives.py": "22552831a4bf02986df811d1f6f8f4f89a00d595ce005779c0545eb18ad0bfd6",
+      "prepare.py": "34f6c68575603a90115b4adf93305844ef5607d6f2788bdad9ac2af2e234fc9c",
+      "run_array.sh": "682b02986a8056cccafd1a1a9b784e06dfe05fc24ed0f4267da36b3768194001",
+      "source_snapshot/__init__.py": "fb8970df37de5f8b9143e51af96e6afb94eb438b9766d8fec07530ffbb5e32e8",
+      "source_snapshot/agrifm.py": "840aacdfd3429f8e82e19f4bfafc5cad8a2515f3d5fd225b3720e63d11e6025b",
+      "source_snapshot/data.py": "fb58dadcfe4dfbbcd6a1743bc88397d3284eea451c0ced4f145e37a93c7e3dec",
+      "source_snapshot/evaluate_native30.py": "52f7f409a54405b54fe0b46630740bc58a01442092898f524a03b8c0422dc7bc",
+      "source_snapshot/model.py": "a65ffcf7705805d7844b86f754494517a16138485d650323ad84f4024d44e59d",
+      "source_snapshot/objective.py": "89a2a7c4d148de11ef3173346401134643737d6539868840b451479a19877bde",
+      "source_snapshot/phenology_targets.py": "bb5b63a926668159186cbf8ae8acd995bada1aae0f88248ac0416a79f00ed72f",
+      "source_snapshot/reliability.py": "35996a51f0abb3eab4236884fdece1ca34e29cb4b73b78d7e2afcff87725f7c1",
+      "source_snapshot/targets.py": "4dbb34b944e92c1459304d7e61116957657acd085f2e84a2c19e95ae894dfae3",
+      "source_snapshot/train.py": "dcac6a563dcfab3b7a564d4651464b69b312344f3d17d06e3de07a54f766ffc3",
+      "submit.sh": "0f8e2d38048385b737ef74e9fe06beaf59ac92b3b59e645f5cf5849cbd68635e",
+      "summarize.py": "4055a0b5585ba4cdf72c3b6f6a7c8cfb27264f989b99c1e526ca5e64b2938579",
+      "test_v2.py": "6bc5b55c05c6429002bb540649325988f1175ada8cbf251cbee3e1c7fd144d89",
+      "train.py": "f1e0e409075bcae56835f734046b087cb5eb3c198523590a1dca54346518f2af",
+      "training_data.py": "764fd5a1f8a5bbcc43b0854bbe41ecc5747181fd51dd35accf12c5800b35afdf",
+      "validate_gpu.py": "cd4f2245900b40eae264412e1fc1f10cc9012bdecf0f40220e7565a7dd11c6a8",
+      "vendor/AgriFM_source/AgriFM/models/video_swin_transformer.py": "c7305dd2069e0c8c77874acd026a8321ef402b2df1a8be082047c53c79a568fc"
+    },
+    "configs": [
+      {
+        "config": "/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/configs/joint_frozen_seed42.yaml",
+        "sha256": "484d72cc5fc1a9ceef9f773a470aa9897fd15b8ab8dd55aabc3815806d1e0a69",
+        "output": "/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/runs/joint_frozen_seed42",
+        "mode": "frozen",
+        "stopping": {
+          "min_epochs": {
+            "A": 3,
+            "M": 3,
+            "C": 8
+          },
+          "patience": {
+            "A": 3,
+            "M": 3,
+            "C": 6
+          },
+          "dev_min_delta": 0.0002,
+          "probe_min_delta": 0.0001,
+          "probe_tiles": 32
+        }
+      },
+      {
+        "config": "/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/configs/joint_fullft_seed42.yaml",
+        "sha256": "cdf520edd0c11b86e3ac0cf91e94e48d35d8a7715689d73a62c67377e90095a7",
+        "output": "/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/runs/joint_fullft_seed42",
+        "mode": "fullft",
+        "stopping": {
+          "min_epochs": {
+            "A": 3,
+            "M": 3,
+            "C": 8
+          },
+          "patience": {
+            "A": 3,
+            "M": 3,
+            "C": 6
+          },
+          "dev_min_delta": 0.0002,
+          "probe_min_delta": 0.0001,
+          "probe_tiles": 32
+        }
+      }
+    ],
+    "gpu_validation_job": "1336973",
+    "free_gib": 319.29568099975586,
+    "formal_test_records_loaded": 0,
+    "max_concurrent_gpus": 2,
+    "time": 1792555656.0883846
+  },
+  "runs": [
+    {
+      "mode": "frozen",
+      "progress": {
+        "event": "training",
+        "encoder_mode": "frozen",
+        "stage": "A",
+        "stage_epoch": 1,
+        "epoch": 1,
+        "step": 50,
+        "total": 1296,
+        "loss": 0.9117675423622131,
+        "time": 1792555928.2780273
+      },
+      "initialization": {
+        "initialization": "agrifm_pretrained_random_head_moe",
+        "task_checkpoint_loaded": false,
+        "origin_epoch": 0,
+        "seed": 42,
+        "encoder_mode": "frozen",
+        "model_state_sha256": "f047edf31710b3bc44b490963cc9eeaf2db182e0e82e28eaa3cd5e4f2029efbb",
+        "initial_encoder_sha256": "c01be2cd74170d313ccb0297b8759e1ae3676770bbae41eac1ccfe1f98cae587",
+        "decoder_initial_sha256": "34f32b6e93d1581f1edee4d1ee7547df8b4d20cfb3b7cc51f6eda7923178c0c2",
+        "moe_initial_sha256": "b0fec58f852604d060d89f0b6c19111385a5018d258050391e02afd8effab621",
+        "pretrained_sha256": "3a8f4b43f466933c5607916c48f8cf9f17230f449f09e4efb7790ece3278d6a8",
+        "pretrained": "/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/weights/AgriFM.pth",
+        "load_report": {
+          "checkpoint": "/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/weights/AgriFM.pth",
+          "loaded_parameter_fraction": 1.0,
+          "loaded_tensors": 349,
+          "missing_keys": [],
+          "unexpected_keys": [
+            "encoder.HLSL30_patch_emd.weights",
+            "encoder.HLSL30_patch_emd.bias",
+            "encoder.Modis_patch_emd.weights",
+            "encoder.Modis_patch_emd.bias"
+          ],
+          "shape_mismatch": [],
+          "adapted_keys": [
+            {
+              "key": "patch_embed.proj.weight",
+              "from": [
+                128,
+                10,
+                4,
+                4,
+                4
+              ],
+              "to": [
+                128,
+                10,
+                4,
+                2,
+                2
+              ],
+              "method": "bilinear_spatial_kernel_resize"
+            }
+          ]
+        },
+        "gpu": "NVIDIA GeForce RTX 4090",
+        "torch": "2.13.0+cu129",
+        "cuda": "12.9",
+        "optimizer": "reset at A/M/C boundaries",
+        "encoder_objective": "CE and existing F1-context reliability path when fullft; targets/weights detached",
+        "test_records_loaded": 0
+      },
+      "baseline": {
+        "tp": 1669,
+        "fp": 1482,
+        "fn": 186389,
+        "tn": 243960,
+        "corn_iou": 0.008805529175899546,
+        "noncorn_iou": 0.5649432301062222,
+        "miou": 0.28687437964106083,
+        "corn_recall": 0.008874921566750684,
+        "corn_f1": 0.01745733725922943,
+        "noncorn_f1": 0.7219983693183247,
+        "macro_f1": 0.36972785328877705,
+        "oa": 0.5666182237600923,
+        "kappa": 0.0032052483631304974,
+        "valid_pixels": 433500,
+        "threshold": 0.5,
+        "tiles": 60
+      },
+      "epochs": 0,
+      "latest": null,
+      "phases": null,
+      "top3": null,
+      "completed": null
+    },
+    {
+      "mode": "fullft",
+      "progress": {
+        "event": "training",
+        "encoder_mode": "fullft",
+        "stage": "A",
+        "stage_epoch": 1,
+        "epoch": 1,
+        "step": 50,
+        "total": 1296,
+        "loss": 0.8865435123443604,
+        "time": 1792555928.1519532
+      },
+      "initialization": {
+        "initialization": "agrifm_pretrained_random_head_moe",
+        "task_checkpoint_loaded": false,
+        "origin_epoch": 0,
+        "seed": 42,
+        "encoder_mode": "fullft",
+        "model_state_sha256": "f047edf31710b3bc44b490963cc9eeaf2db182e0e82e28eaa3cd5e4f2029efbb",
+        "initial_encoder_sha256": "c01be2cd74170d313ccb0297b8759e1ae3676770bbae41eac1ccfe1f98cae587",
+        "decoder_initial_sha256": "34f32b6e93d1581f1edee4d1ee7547df8b4d20cfb3b7cc51f6eda7923178c0c2",
+        "moe_initial_sha256": "b0fec58f852604d060d89f0b6c19111385a5018d258050391e02afd8effab621",
+        "pretrained_sha256": "3a8f4b43f466933c5607916c48f8cf9f17230f449f09e4efb7790ece3278d6a8",
+        "pretrained": "/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/weights/AgriFM.pth",
+        "load_report": {
+          "checkpoint": "/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/weights/AgriFM.pth",
+          "loaded_parameter_fraction": 1.0,
+          "loaded_tensors": 349,
+          "missing_keys": [],
+          "unexpected_keys": [
+            "encoder.HLSL30_patch_emd.weights",
+            "encoder.HLSL30_patch_emd.bias",
+            "encoder.Modis_patch_emd.weights",
+            "encoder.Modis_patch_emd.bias"
+          ],
+          "shape_mismatch": [],
+          "adapted_keys": [
+            {
+              "key": "patch_embed.proj.weight",
+              "from": [
+                128,
+                10,
+                4,
+                4,
+                4
+              ],
+              "to": [
+                128,
+                10,
+                4,
+                2,
+                2
+              ],
+              "method": "bilinear_spatial_kernel_resize"
+            }
+          ]
+        },
+        "gpu": "NVIDIA GeForce RTX 4090",
+        "torch": "2.13.0+cu129",
+        "cuda": "12.9",
+        "optimizer": "reset at A/M/C boundaries",
+        "encoder_objective": "CE and existing F1-context reliability path when fullft; targets/weights detached",
+        "test_records_loaded": 0
+      },
+      "baseline": {
+        "tp": 1669,
+        "fp": 1482,
+        "fn": 186389,
+        "tn": 243960,
+        "corn_iou": 0.008805529175899546,
+        "noncorn_iou": 0.5649432301062222,
+        "miou": 0.28687437964106083,
+        "corn_recall": 0.008874921566750684,
+        "corn_f1": 0.01745733725922943,
+        "noncorn_f1": 0.7219983693183247,
+        "macro_f1": 0.36972785328877705,
+        "oa": 0.5666182237600923,
+        "kappa": 0.0032052483631304974,
+        "valid_pixels": 433500,
+        "threshold": 0.5,
+        "tiles": 60
+      },
+      "epochs": 0,
+      "latest": null,
+      "phases": null,
+      "top3": null,
+      "completed": null
+    }
+  ],
+  "queue": "               JOBID                     NAME      STATE         TIME          NODELIST(REASON)\n             1336994              mgf3_report    PENDING         0:00              (Dependency)\n     1336993_[0-5%2]                mgf3_test    PENDING         0:00              (Dependency)\n             1336992              mgf3_freeze    PENDING         0:00              (Dependency)\n             1336891               dpa_EF_cdl    PENDING         0:00              (Dependency)\n           1336991_0               mgf3_train    RUNNING         1:43                     g0013\n           1336991_1               mgf3_train    RUNNING         1:43                     g0013\n             1336889       dpa_EF_tail_seed42    RUNNING        42:42                     g0013\n",
+  "accounting": "1336992         PENDING   00:00:00      0:0 \n1336994         PENDING   00:00:00      0:0 \n1336991_0       RUNNING   00:01:43      0:0 \n1336991_1       RUNNING   00:01:43      0:0 \n1336993_[0-+    PENDING   00:00:00      0:0 \n",
+  "allocation": "JobId=1336995 ArrayJobId=1336991 ArrayTaskId=0 ArrayTaskThrottle=2 JobName=mgf3_train UserId=scze971(4896) GroupId=scze971(4896) MCS_label=N/A Priority=1 Nice=0 Account=scze971 QOS=normal WCKey=* JobState=RUNNING Reason=None Dependency=(null) Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:01:43 TimeLimit=3-00:00:00 TimeMin=N/A SubmitTime=2026-10-21T12:07:52 EligibleTime=2026-10-21T12:07:52 AccrueTime=Unknown StartTime=2026-10-21T12:07:52 EndTime=2026-10-24T12:07:52 Deadline=N/A SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-21T12:07:52 Scheduler=Backfill Partition=vip_gpu_scze971 AllocNode:Sid=ln01:1002461 ReqNodeList=(null) ExcNodeList=(null) NodeList=g0013 BatchHost=g0013 NumNodes=1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=8,mem=64G,node=1,billing=8,gres/gpu=1 AllocTRES=cpu=8,mem=64G,node=1,billing=8,gres/gpu=1 Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=8 MinMemoryNode=64G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null) Command=/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/run_array.sh WorkDir=/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021 StdErr=/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/logs/train-1336991_0.err StdIn=/dev/null StdOut=/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/logs/train-1336991_0.out Power= TresPerJob=gres/gpu:1 TresPerTask=cpu:8 \n\nJobId=1336991 ArrayJobId=1336991 ArrayTaskId=1 ArrayTaskThrottle=2 JobName=mgf3_train UserId=scze971(4896) GroupId=scze971(4896) MCS_label=N/A Priority=1 Nice=0 Account=scze971 QOS=normal WCKey=* JobState=RUNNING Reason=None Dependency=(null) Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:01:43 TimeLimit=3-00:00:00 TimeMin=N/A SubmitTime=2026-10-21T12:07:52 EligibleTime=2026-10-21T12:07:52 AccrueTime=Unknown StartTime=2026-10-21T12:07:52 EndTime=2026-10-24T12:07:52 Deadline=N/A SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-21T12:07:52 Scheduler=Backfill Partition=vip_gpu_scze971 AllocNode:Sid=ln01:1002461 ReqNodeList=(null) ExcNodeList=(null) NodeList=g0013 BatchHost=g0013 NumNodes=1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=8,mem=64G,node=1,billing=8,gres/gpu=1 AllocTRES=cpu=8,mem=64G,node=1,billing=8,gres/gpu=1 Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=8 MinMemoryNode=64G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null) Command=/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/run_array.sh WorkDir=/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021 StdErr=/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/logs/train-1336991_1.err StdIn=/dev/null StdOut=/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/logs/train-1336991_1.out Power= TresPerJob=gres/gpu:1 TresPerTask=cpu:8 \n",
+  "errors": {},
+  "record_created_at": "2026-10-21T12:10:11.021312+08:00",
+  "review_package": "MoE_GMM_fresh_frozen_vs_fullft_v3_review_20261021.zip",
+  "review_package_sha256": "929685d94068fcfa9c4a84a94fd1540d39c7b06ebfe4beb56463b9468bf660b2"
+}

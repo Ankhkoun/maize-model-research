@@ -1,0 +1,8 @@
+{
+  "bce": 0.7120706501668673,
+  "entropy": 0.3063621433340286,
+  "excess_bce": 0.40570850683283866,
+  "valid_patches": 45695,
+  "tiles": 4,
+  "meaning": "fixed Train qG target fitting diagnostic, not correctness accuracy"
+}

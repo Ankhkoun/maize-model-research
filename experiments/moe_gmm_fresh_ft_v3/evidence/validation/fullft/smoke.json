@@ -1,0 +1,122 @@
+{
+  "passed": true,
+  "encoder_mode": "fullft",
+  "initial_model_sha256": "f047edf31710b3bc44b490963cc9eeaf2db182e0e82e28eaa3cd5e4f2029efbb",
+  "stages": [
+    {
+      "stage": "A",
+      "steps": 4,
+      "encoder_changed": true,
+      "encoder_gradient": {
+        "patch_embed": {
+          "trainable": 20608,
+          "grad_norm": 0.2152636229726323
+        },
+        "swin_0": {
+          "trainable": 548920,
+          "grad_norm": 1.02551260108806
+        },
+        "swin_1": {
+          "trainable": 2146416,
+          "grad_norm": 1.2121539131730799
+        },
+        "swin_2": {
+          "trainable": 59574240,
+          "grad_norm": 0.8506336367933695
+        },
+        "swin_3": {
+          "trainable": 25354688,
+          "grad_norm": 0.525252615964934
+        }
+      },
+      "peak_allocated_gib": 4.662047386169434,
+      "bank": {
+        "moe_target": null,
+        "samples": 0
+      }
+    },
+    {
+      "stage": "M",
+      "steps": 4,
+      "encoder_changed": true,
+      "encoder_gradient": {
+        "patch_embed": {
+          "trainable": 20608,
+          "grad_norm": 0.07226112264505248
+        },
+        "swin_0": {
+          "trainable": 548920,
+          "grad_norm": 0.34878853567277873
+        },
+        "swin_1": {
+          "trainable": 2146416,
+          "grad_norm": 0.3062725549673636
+        },
+        "swin_2": {
+          "trainable": 59574240,
+          "grad_norm": 0.2110851999008892
+        },
+        "swin_3": {
+          "trainable": 25354688,
+          "grad_norm": 0.10391168639532795
+        }
+      },
+      "peak_allocated_gib": 7.353357315063477,
+      "bank": {
+        "samples": 4,
+        "eligible_patches": 45695,
+        "gmm_patches": 45695,
+        "fused_absolute_difference": 0.054538896307349205,
+        "seconds": 15.583925247192383,
+        "eligible_without_direct_observation": 0,
+        "moe_target": "gmm",
+        "target_ema": 0.0,
+        "test_records_loaded": 0,
+        "source": "unaugmented Train ordinary CE; same snapshot MoE; raw Gaussian PDFs",
+        "fallback": "unavailable GMM: qstar=r; GMM CE unit weight; BCE skipped; no rank"
+      }
+    },
+    {
+      "stage": "C",
+      "steps": 4,
+      "encoder_changed": true,
+      "encoder_gradient": {
+        "patch_embed": {
+          "trainable": 20608,
+          "grad_norm": 0.28259593599333577
+        },
+        "swin_0": {
+          "trainable": 548920,
+          "grad_norm": 1.5614514073500796
+        },
+        "swin_1": {
+          "trainable": 2146416,
+          "grad_norm": 1.5969085259237308
+        },
+        "swin_2": {
+          "trainable": 59574240,
+          "grad_norm": 0.9576384254784737
+        },
+        "swin_3": {
+          "trainable": 25354688,
+          "grad_norm": 0.2891773438324714
+        }
+      },
+      "peak_allocated_gib": 7.353357315063477,
+      "bank": {
+        "samples": 4,
+        "eligible_patches": 45695,
+        "gmm_patches": 45695,
+        "fused_absolute_difference": 0.03430517017841339,
+        "seconds": 15.753685712814331,
+        "eligible_without_direct_observation": 0,
+        "moe_target": "joint",
+        "target_ema": 0.0,
+        "test_records_loaded": 0,
+        "source": "unaugmented Train ordinary CE; same snapshot MoE; raw Gaussian PDFs",
+        "fallback": "unavailable GMM: qstar=r; GMM CE unit weight; BCE skipped; no rank"
+      }
+    }
+  ],
+  "test_records_loaded": 0
+}

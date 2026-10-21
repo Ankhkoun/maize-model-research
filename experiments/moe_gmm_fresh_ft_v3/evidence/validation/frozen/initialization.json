@@ -1,0 +1,52 @@
+{
+  "initialization": "agrifm_pretrained_random_head_moe",
+  "task_checkpoint_loaded": false,
+  "origin_epoch": 0,
+  "seed": 42,
+  "encoder_mode": "frozen",
+  "model_state_sha256": "f047edf31710b3bc44b490963cc9eeaf2db182e0e82e28eaa3cd5e4f2029efbb",
+  "initial_encoder_sha256": "c01be2cd74170d313ccb0297b8759e1ae3676770bbae41eac1ccfe1f98cae587",
+  "decoder_initial_sha256": "34f32b6e93d1581f1edee4d1ee7547df8b4d20cfb3b7cc51f6eda7923178c0c2",
+  "moe_initial_sha256": "b0fec58f852604d060d89f0b6c19111385a5018d258050391e02afd8effab621",
+  "pretrained_sha256": "3a8f4b43f466933c5607916c48f8cf9f17230f449f09e4efb7790ece3278d6a8",
+  "pretrained": "/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/weights/AgriFM.pth",
+  "load_report": {
+    "checkpoint": "/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/weights/AgriFM.pth",
+    "loaded_parameter_fraction": 1.0,
+    "loaded_tensors": 349,
+    "missing_keys": [],
+    "unexpected_keys": [
+      "encoder.HLSL30_patch_emd.weights",
+      "encoder.HLSL30_patch_emd.bias",
+      "encoder.Modis_patch_emd.weights",
+      "encoder.Modis_patch_emd.bias"
+    ],
+    "shape_mismatch": [],
+    "adapted_keys": [
+      {
+        "key": "patch_embed.proj.weight",
+        "from": [
+          128,
+          10,
+          4,
+          4,
+          4
+        ],
+        "to": [
+          128,
+          10,
+          4,
+          2,
+          2
+        ],
+        "method": "bilinear_spatial_kernel_resize"
+      }
+    ]
+  },
+  "gpu": "NVIDIA GeForce RTX 4090",
+  "torch": "2.13.0+cu129",
+  "cuda": "12.9",
+  "optimizer": "reset at A/M/C boundaries",
+  "encoder_objective": "CE and existing F1-context reliability path when fullft; targets/weights detached",
+  "test_records_loaded": 0
+}

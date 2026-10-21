@@ -1,0 +1,298 @@
+{
+  "version": "fresh-ft-v3",
+  "built_at": "2026-10-21T04:04:01.356372+00:00",
+  "remote_root": "/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021",
+  "source_files_verified": 29,
+  "cpu_tests_passed": 12,
+  "gpu_validation_passed": true,
+  "gpu_job": "1336973",
+  "gpu": {
+    "passed": true,
+    "source_manifest": {
+      "README.md": "d906b586f56633b9347263a5f4c4f8c6bb9fb753d4079f8e7c3661b474577981",
+      "campaign.py": "738b52fe50558255a9414c4927d2bf0ae936704129a3c5c7b1f6a7a28ea99044",
+      "common.py": "d6a1eddfecf54bc22e99b27c99279b186957eccd91cd9bf0b0ed49f330b49122",
+      "configs/joint_frozen_seed42.yaml": "484d72cc5fc1a9ceef9f773a470aa9897fd15b8ab8dd55aabc3815806d1e0a69",
+      "configs/joint_fullft_seed42.yaml": "cdf520edd0c11b86e3ac0cf91e94e48d35d8a7715689d73a62c67377e90095a7",
+      "configuration.py": "05554a6f38f6e38564339f453dd25b308a232f5ea93d025004d4caa14c2cd9e7",
+      "evaluate.py": "ca99f5948a406b75f287ffa3da09e2f64567ee5732dd357715eddf1bf762871d",
+      "experiment.py": "1a07825e25bf10552f9dbb81a1adf6836e683e873ba729bdda9586d2ac8f7ae8",
+      "fusion.py": "d852299bfbcb6b56fff7bdd231e39329c87bc67fbcc68e1a0b3c2ded20a49e44",
+      "objectives.py": "22552831a4bf02986df811d1f6f8f4f89a00d595ce005779c0545eb18ad0bfd6",
+      "prepare.py": "34f6c68575603a90115b4adf93305844ef5607d6f2788bdad9ac2af2e234fc9c",
+      "run_array.sh": "682b02986a8056cccafd1a1a9b784e06dfe05fc24ed0f4267da36b3768194001",
+      "source_snapshot/__init__.py": "fb8970df37de5f8b9143e51af96e6afb94eb438b9766d8fec07530ffbb5e32e8",
+      "source_snapshot/agrifm.py": "840aacdfd3429f8e82e19f4bfafc5cad8a2515f3d5fd225b3720e63d11e6025b",
+      "source_snapshot/data.py": "fb58dadcfe4dfbbcd6a1743bc88397d3284eea451c0ced4f145e37a93c7e3dec",
+      "source_snapshot/evaluate_native30.py": "52f7f409a54405b54fe0b46630740bc58a01442092898f524a03b8c0422dc7bc",
+      "source_snapshot/model.py": "a65ffcf7705805d7844b86f754494517a16138485d650323ad84f4024d44e59d",
+      "source_snapshot/objective.py": "89a2a7c4d148de11ef3173346401134643737d6539868840b451479a19877bde",
+      "source_snapshot/phenology_targets.py": "bb5b63a926668159186cbf8ae8acd995bada1aae0f88248ac0416a79f00ed72f",
+      "source_snapshot/reliability.py": "35996a51f0abb3eab4236884fdece1ca34e29cb4b73b78d7e2afcff87725f7c1",
+      "source_snapshot/targets.py": "4dbb34b944e92c1459304d7e61116957657acd085f2e84a2c19e95ae894dfae3",
+      "source_snapshot/train.py": "dcac6a563dcfab3b7a564d4651464b69b312344f3d17d06e3de07a54f766ffc3",
+      "submit.sh": "0f8e2d38048385b737ef74e9fe06beaf59ac92b3b59e645f5cf5849cbd68635e",
+      "summarize.py": "4055a0b5585ba4cdf72c3b6f6a7c8cfb27264f989b99c1e526ca5e64b2938579",
+      "test_v2.py": "6bc5b55c05c6429002bb540649325988f1175ada8cbf251cbee3e1c7fd144d89",
+      "train.py": "f1e0e409075bcae56835f734046b087cb5eb3c198523590a1dca54346518f2af",
+      "training_data.py": "764fd5a1f8a5bbcc43b0854bbe41ecc5747181fd51dd35accf12c5800b35afdf",
+      "validate_gpu.py": "cd4f2245900b40eae264412e1fc1f10cc9012bdecf0f40220e7565a7dd11c6a8",
+      "vendor/AgriFM_source/AgriFM/models/video_swin_transformer.py": "c7305dd2069e0c8c77874acd026a8321ef402b2df1a8be082047c53c79a568fc"
+    },
+    "smoke": {
+      "frozen": {
+        "passed": true,
+        "encoder_mode": "frozen",
+        "initial_model_sha256": "f047edf31710b3bc44b490963cc9eeaf2db182e0e82e28eaa3cd5e4f2029efbb",
+        "stages": [
+          {
+            "stage": "A",
+            "steps": 4,
+            "encoder_changed": false,
+            "encoder_gradient": {
+              "patch_embed": {
+                "trainable": 0,
+                "grad_norm": 0.0
+              },
+              "swin_0": {
+                "trainable": 0,
+                "grad_norm": 0.0
+              },
+              "swin_1": {
+                "trainable": 0,
+                "grad_norm": 0.0
+              },
+              "swin_2": {
+                "trainable": 0,
+                "grad_norm": 0.0
+              },
+              "swin_3": {
+                "trainable": 0,
+                "grad_norm": 0.0
+              }
+            },
+            "peak_allocated_gib": 2.406571388244629,
+            "bank": {
+              "moe_target": null,
+              "samples": 0
+            }
+          },
+          {
+            "stage": "M",
+            "steps": 4,
+            "encoder_changed": false,
+            "encoder_gradient": {
+              "patch_embed": {
+                "trainable": 0,
+                "grad_norm": 0.0
+              },
+              "swin_0": {
+                "trainable": 0,
+                "grad_norm": 0.0
+              },
+              "swin_1": {
+                "trainable": 0,
+                "grad_norm": 0.0
+              },
+              "swin_2": {
+                "trainable": 0,
+                "grad_norm": 0.0
+              },
+              "swin_3": {
+                "trainable": 0,
+                "grad_norm": 0.0
+              }
+            },
+            "peak_allocated_gib": 6.207402229309082,
+            "bank": {
+              "samples": 4,
+              "eligible_patches": 45695,
+              "gmm_patches": 45695,
+              "fused_absolute_difference": 0.07365196291357279,
+              "seconds": 15.571093559265137,
+              "eligible_without_direct_observation": 0,
+              "moe_target": "gmm",
+              "target_ema": 0.0,
+              "test_records_loaded": 0,
+              "source": "unaugmented Train ordinary CE; same snapshot MoE; raw Gaussian PDFs",
+              "fallback": "unavailable GMM: qstar=r; GMM CE unit weight; BCE skipped; no rank"
+            }
+          },
+          {
+            "stage": "C",
+            "steps": 4,
+            "encoder_changed": false,
+            "encoder_gradient": {
+              "patch_embed": {
+                "trainable": 0,
+                "grad_norm": 0.0
+              },
+              "swin_0": {
+                "trainable": 0,
+                "grad_norm": 0.0
+              },
+              "swin_1": {
+                "trainable": 0,
+                "grad_norm": 0.0
+              },
+              "swin_2": {
+                "trainable": 0,
+                "grad_norm": 0.0
+              },
+              "swin_3": {
+                "trainable": 0,
+                "grad_norm": 0.0
+              }
+            },
+            "peak_allocated_gib": 6.209424018859863,
+            "bank": {
+              "samples": 4,
+              "eligible_patches": 45695,
+              "gmm_patches": 45695,
+              "fused_absolute_difference": 0.0497875576838851,
+              "seconds": 15.660529136657715,
+              "eligible_without_direct_observation": 0,
+              "moe_target": "joint",
+              "target_ema": 0.0,
+              "test_records_loaded": 0,
+              "source": "unaugmented Train ordinary CE; same snapshot MoE; raw Gaussian PDFs",
+              "fallback": "unavailable GMM: qstar=r; GMM CE unit weight; BCE skipped; no rank"
+            }
+          }
+        ],
+        "test_records_loaded": 0
+      },
+      "fullft": {
+        "passed": true,
+        "encoder_mode": "fullft",
+        "initial_model_sha256": "f047edf31710b3bc44b490963cc9eeaf2db182e0e82e28eaa3cd5e4f2029efbb",
+        "stages": [
+          {
+            "stage": "A",
+            "steps": 4,
+            "encoder_changed": true,
+            "encoder_gradient": {
+              "patch_embed": {
+                "trainable": 20608,
+                "grad_norm": 0.2152636229726323
+              },
+              "swin_0": {
+                "trainable": 548920,
+                "grad_norm": 1.02551260108806
+              },
+              "swin_1": {
+                "trainable": 2146416,
+                "grad_norm": 1.2121539131730799
+              },
+              "swin_2": {
+                "trainable": 59574240,
+                "grad_norm": 0.8506336367933695
+              },
+              "swin_3": {
+                "trainable": 25354688,
+                "grad_norm": 0.525252615964934
+              }
+            },
+            "peak_allocated_gib": 4.662047386169434,
+            "bank": {
+              "moe_target": null,
+              "samples": 0
+            }
+          },
+          {
+            "stage": "M",
+            "steps": 4,
+            "encoder_changed": true,
+            "encoder_gradient": {
+              "patch_embed": {
+                "trainable": 20608,
+                "grad_norm": 0.07226112264505248
+              },
+              "swin_0": {
+                "trainable": 548920,
+                "grad_norm": 0.34878853567277873
+              },
+              "swin_1": {
+                "trainable": 2146416,
+                "grad_norm": 0.3062725549673636
+              },
+              "swin_2": {
+                "trainable": 59574240,
+                "grad_norm": 0.2110851999008892
+              },
+              "swin_3": {
+                "trainable": 25354688,
+                "grad_norm": 0.10391168639532795
+              }
+            },
+            "peak_allocated_gib": 7.353357315063477,
+            "bank": {
+              "samples": 4,
+              "eligible_patches": 45695,
+              "gmm_patches": 45695,
+              "fused_absolute_difference": 0.054538896307349205,
+              "seconds": 15.583925247192383,
+              "eligible_without_direct_observation": 0,
+              "moe_target": "gmm",
+              "target_ema": 0.0,
+              "test_records_loaded": 0,
+              "source": "unaugmented Train ordinary CE; same snapshot MoE; raw Gaussian PDFs",
+              "fallback": "unavailable GMM: qstar=r; GMM CE unit weight; BCE skipped; no rank"
+            }
+          },
+          {
+            "stage": "C",
+            "steps": 4,
+            "encoder_changed": true,
+            "encoder_gradient": {
+              "patch_embed": {
+                "trainable": 20608,
+                "grad_norm": 0.28259593599333577
+              },
+              "swin_0": {
+                "trainable": 548920,
+                "grad_norm": 1.5614514073500796
+              },
+              "swin_1": {
+                "trainable": 2146416,
+                "grad_norm": 1.5969085259237308
+              },
+              "swin_2": {
+                "trainable": 59574240,
+                "grad_norm": 0.9576384254784737
+              },
+              "swin_3": {
+                "trainable": 25354688,
+                "grad_norm": 0.2891773438324714
+              }
+            },
+            "peak_allocated_gib": 7.353357315063477,
+            "bank": {
+              "samples": 4,
+              "eligible_patches": 45695,
+              "gmm_patches": 45695,
+              "fused_absolute_difference": 0.03430517017841339,
+              "seconds": 15.753685712814331,
+              "eligible_without_direct_observation": 0,
+              "moe_target": "joint",
+              "target_ema": 0.0,
+              "test_records_loaded": 0,
+              "source": "unaugmented Train ordinary CE; same snapshot MoE; raw Gaussian PDFs",
+              "fallback": "unavailable GMM: qstar=r; GMM CE unit weight; BCE skipped; no rank"
+            }
+          }
+        ],
+        "test_records_loaded": 0
+      }
+    },
+    "full_vs_classifier_max_logit_diff": 0.0,
+    "real_tile": "US-01_Nebraska_Central_Platte_York_2021_tile_r00_c09",
+    "test_records_loaded": 0,
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "torch": "2.13.0+cu129"
+  },
+  "formal_training_submitted": false,
+  "cdl_testing_submitted": false,
+  "max_concurrent_gpus": 2,
+  "updated_original_review_package": true
+}

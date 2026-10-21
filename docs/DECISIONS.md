@@ -56,3 +56,7 @@
 ## 2026-10-19：以独立子项目发布USA B1-repro-K4
 
 用户指定发布B1-repro-K4。将其置于`baselines/b1_repro_k4/`，不替换Xinjiang模型或数据协议。冻结核心代码字节，补充可移植入口、预检和文档；模型已知限制保持公开。数据、伪标签、checkpoint、本地路径配置不提交。历史结果仅用于协议参照，不据此宣称MoE分类融合有效。
+
+## 2026-10-21：MoE-GMM fresh-ft-v3 独立版本
+
+采用原始AgriFM编码器预训练初始化，分类头、MoE及门控重新初始化，禁止加载旧B1任务检查点。仅seed42，冻结编码器与全量微调两组；A/M/C重新训练，分别使用普通CE、qG监督BCE、q*联合加权CE与BCE。两组适用同一自适应停止规则，实际更新数可不同。C阶段每组GTdev top3全部冻结后测试，GTdev rank1固定为主结果，不按CDL重选。执行代码和架构见 `experiments/moe_gmm_fresh_ft_v3/`，不替换历史B1或Xinjiang模型。

@@ -1,0 +1,92 @@
+{
+  "experiment_id": "USA-MoE-GMM-Fresh-Frozen-vs-FullFT-v3-20261021",
+  "experiment": {
+    "mode": "full"
+  },
+  "data": {
+    "root": "/data/run01/scze971/usa/maize_paper_workspace",
+    "protocol_assets": "/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/protocol_assets",
+    "agrifm_source": "/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/vendor/AgriFM_source",
+    "pretrained": "/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/weights/AgriFM.pth",
+    "output": "/data/run01/scze971/usa_moe_gmm_fresh_ft_v3_20261021/runs/joint_fullft_seed42"
+  },
+  "model": {
+    "num_experts": 4,
+    "reliability_input": "a4_cube",
+    "use_checkpointing": true,
+    "window_chunk_size": 1,
+    "use_support_features": true,
+    "use_patch_metadata": true,
+    "warmup_backbone": false,
+    "enable_phase_supervision": false,
+    "enable_film": false,
+    "enable_feature_residual": false
+  },
+  "training": {
+    "seed": 42,
+    "precision": "bf16",
+    "micro_batch": 1,
+    "gradient_accumulation": 8,
+    "stage_epochs": {
+      "A": 10,
+      "M": 10,
+      "C": 30
+    },
+    "decoder_lr": 0.00015,
+    "reliability_lr": 0.0001,
+    "weight_decay": 0.0001,
+    "lambda_reliability": 1.0,
+    "reliability_weight_floor": 0.15,
+    "reliability_ramp_epochs": 3,
+    "use_reliability_weighted_ce": true,
+    "ema": 0.0,
+    "gmm_steps": 40,
+    "gmm_min_samples": 32,
+    "gmm_min_separation": 0.08,
+    "gmm_min_weight": 0.03,
+    "spatial_augmentation": true,
+    "num_workers": 2,
+    "prefetch_factor": 2,
+    "encoder_lr": 1e-05,
+    "clip_norm": 1.0,
+    "weight_threshold": 0.6,
+    "weight_temperature": 0.1,
+    "balance_weight": 0.01,
+    "monotonic_weight": 0.02,
+    "separation_weight": 0.01,
+    "center_min_separation": 0.15,
+    "stopping": {
+      "min_epochs": {
+        "A": 3,
+        "M": 3,
+        "C": 8
+      },
+      "patience": {
+        "A": 3,
+        "M": 3,
+        "C": 6
+      },
+      "dev_min_delta": 0.0002,
+      "probe_min_delta": 0.0001,
+      "probe_tiles": 32
+    }
+  },
+  "evaluation": {
+    "selection_metric": "miou",
+    "threshold_policy": "fixed_0.50",
+    "grid": "native30m"
+  },
+  "campaign": {
+    "version": "fresh-ft-v3",
+    "arm": "joint",
+    "encoder_mode": "fullft",
+    "moe_target": "joint",
+    "epochs": 50,
+    "initialization": "agrifm_pretrained_random_head_moe",
+    "pretrained_sha256": "3a8f4b43f466933c5607916c48f8cf9f17230f449f09e4efb7790ece3278d6a8",
+    "eta": 1.0,
+    "eps": 0.0001,
+    "primary": "GTdev60 rank1 within C, fixed0.5, earliest ties; ranks2/3 secondary",
+    "testing": "both modes complete; freeze all SIX top3 weights before Native30m Test500; no test-based reranking"
+  }
+}

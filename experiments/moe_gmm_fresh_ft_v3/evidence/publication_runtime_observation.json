@@ -1,0 +1,79 @@
+{
+  "source_manifest": {
+    "README.md": "d906b586f56633b9347263a5f4c4f8c6bb9fb753d4079f8e7c3661b474577981",
+    "campaign.py": "738b52fe50558255a9414c4927d2bf0ae936704129a3c5c7b1f6a7a28ea99044",
+    "common.py": "d6a1eddfecf54bc22e99b27c99279b186957eccd91cd9bf0b0ed49f330b49122",
+    "configs/joint_frozen_seed42.yaml": "484d72cc5fc1a9ceef9f773a470aa9897fd15b8ab8dd55aabc3815806d1e0a69",
+    "configs/joint_fullft_seed42.yaml": "cdf520edd0c11b86e3ac0cf91e94e48d35d8a7715689d73a62c67377e90095a7",
+    "configuration.py": "05554a6f38f6e38564339f453dd25b308a232f5ea93d025004d4caa14c2cd9e7",
+    "evaluate.py": "ca99f5948a406b75f287ffa3da09e2f64567ee5732dd357715eddf1bf762871d",
+    "experiment.py": "1a07825e25bf10552f9dbb81a1adf6836e683e873ba729bdda9586d2ac8f7ae8",
+    "fusion.py": "d852299bfbcb6b56fff7bdd231e39329c87bc67fbcc68e1a0b3c2ded20a49e44",
+    "objectives.py": "22552831a4bf02986df811d1f6f8f4f89a00d595ce005779c0545eb18ad0bfd6",
+    "prepare.py": "34f6c68575603a90115b4adf93305844ef5607d6f2788bdad9ac2af2e234fc9c",
+    "run_array.sh": "682b02986a8056cccafd1a1a9b784e06dfe05fc24ed0f4267da36b3768194001",
+    "source_snapshot/__init__.py": "fb8970df37de5f8b9143e51af96e6afb94eb438b9766d8fec07530ffbb5e32e8",
+    "source_snapshot/agrifm.py": "840aacdfd3429f8e82e19f4bfafc5cad8a2515f3d5fd225b3720e63d11e6025b",
+    "source_snapshot/data.py": "fb58dadcfe4dfbbcd6a1743bc88397d3284eea451c0ced4f145e37a93c7e3dec",
+    "source_snapshot/evaluate_native30.py": "52f7f409a54405b54fe0b46630740bc58a01442092898f524a03b8c0422dc7bc",
+    "source_snapshot/model.py": "a65ffcf7705805d7844b86f754494517a16138485d650323ad84f4024d44e59d",
+    "source_snapshot/objective.py": "89a2a7c4d148de11ef3173346401134643737d6539868840b451479a19877bde",
+    "source_snapshot/phenology_targets.py": "bb5b63a926668159186cbf8ae8acd995bada1aae0f88248ac0416a79f00ed72f",
+    "source_snapshot/reliability.py": "35996a51f0abb3eab4236884fdece1ca34e29cb4b73b78d7e2afcff87725f7c1",
+    "source_snapshot/targets.py": "4dbb34b944e92c1459304d7e61116957657acd085f2e84a2c19e95ae894dfae3",
+    "source_snapshot/train.py": "dcac6a563dcfab3b7a564d4651464b69b312344f3d17d06e3de07a54f766ffc3",
+    "submit.sh": "0f8e2d38048385b737ef74e9fe06beaf59ac92b3b59e645f5cf5849cbd68635e",
+    "summarize.py": "4055a0b5585ba4cdf72c3b6f6a7c8cfb27264f989b99c1e526ca5e64b2938579",
+    "test_v2.py": "6bc5b55c05c6429002bb540649325988f1175ada8cbf251cbee3e1c7fd144d89",
+    "train.py": "f1e0e409075bcae56835f734046b087cb5eb3c198523590a1dca54346518f2af",
+    "training_data.py": "764fd5a1f8a5bbcc43b0854bbe41ecc5747181fd51dd35accf12c5800b35afdf",
+    "validate_gpu.py": "cd4f2245900b40eae264412e1fc1f10cc9012bdecf0f40220e7565a7dd11c6a8",
+    "vendor/AgriFM_source/AgriFM/models/video_swin_transformer.py": "c7305dd2069e0c8c77874acd026a8321ef402b2df1a8be082047c53c79a568fc"
+  },
+  "changed_sources": [],
+  "runs": [
+    {
+      "name": "joint_frozen_seed42",
+      "progress": {
+        "event": "training",
+        "encoder_mode": "frozen",
+        "stage": "M",
+        "stage_epoch": 1,
+        "epoch": 7,
+        "step": 1000,
+        "total": 1296,
+        "loss": 0.6128836274147034,
+        "time": 1792559538.7188592
+      },
+      "completed_epochs": 6,
+      "completed": false,
+      "task_checkpoint_loaded": false,
+      "origin_epoch": 0,
+      "initial_model_sha256": "f047edf31710b3bc44b490963cc9eeaf2db182e0e82e28eaa3cd5e4f2029efbb"
+    },
+    {
+      "name": "joint_fullft_seed42",
+      "progress": {
+        "event": "target_refresh",
+        "epoch": 7,
+        "step": 100,
+        "total": 1296,
+        "time": 1792559544.586424
+      },
+      "completed_epochs": 6,
+      "completed": false,
+      "task_checkpoint_loaded": false,
+      "origin_epoch": 0,
+      "initial_model_sha256": "f047edf31710b3bc44b490963cc9eeaf2db182e0e82e28eaa3cd5e4f2029efbb"
+    }
+  ],
+  "jobs": {
+    "training": "1336991",
+    "freeze": "1336992",
+    "testing": "1336993",
+    "summary": "1336994",
+    "max_concurrent_gpus": 2
+  },
+  "accounting": "1336992         PENDING   00:00:00      0:0 \n1336994         PENDING   00:00:00      0:0 \n1336991_0       RUNNING   01:01:56      0:0 \n1336991_1       RUNNING   01:01:56      0:0 \n1336993_[0-+    PENDING   00:00:00      0:0 \n",
+  "observed_at_asia_shanghai": "2026-10-21T13:09:44.731172+08:00"
+}

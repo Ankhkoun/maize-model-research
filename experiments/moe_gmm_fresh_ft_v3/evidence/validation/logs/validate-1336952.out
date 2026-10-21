@@ -1,0 +1,20 @@
+{"event": "training", "encoder_mode": "frozen", "stage": "A", "stage_epoch": 1, "epoch": 1, "step": 1, "total": 4, "loss": 0.8416439890861511, "time": 1792554936.6839468}
+{"event": "training", "encoder_mode": "frozen", "stage": "A", "stage_epoch": 1, "epoch": 1, "step": 4, "total": 4, "loss": 0.5865756273269653, "time": 1792554936.8714786}
+{"event": "target_refresh", "epoch": 2, "step": 1, "total": 4}
+{"event": "target_refresh", "epoch": 2, "step": 4, "total": 4}
+{"event": "training", "encoder_mode": "frozen", "stage": "M", "stage_epoch": 1, "epoch": 2, "step": 1, "total": 4, "loss": 1.3195303678512573, "time": 1792554983.3994167}
+{"event": "training", "encoder_mode": "frozen", "stage": "M", "stage_epoch": 1, "epoch": 2, "step": 4, "total": 4, "loss": 1.068795919418335, "time": 1792554984.6126432}
+{"event": "target_refresh", "epoch": 3, "step": 1, "total": 4}
+{"event": "target_refresh", "epoch": 3, "step": 4, "total": 4}
+{"event": "training", "encoder_mode": "frozen", "stage": "C", "stage_epoch": 1, "epoch": 3, "step": 1, "total": 4, "loss": 1.07088303565979, "time": 1792555015.6529143}
+{"event": "training", "encoder_mode": "frozen", "stage": "C", "stage_epoch": 1, "epoch": 3, "step": 4, "total": 4, "loss": 0.9456735849380493, "time": 1792555016.8780007}
+{"event": "training", "encoder_mode": "fullft", "stage": "A", "stage_epoch": 1, "epoch": 1, "step": 1, "total": 4, "loss": 0.8472887277603149, "time": 1792555062.1754742}
+{"event": "training", "encoder_mode": "fullft", "stage": "A", "stage_epoch": 1, "epoch": 1, "step": 4, "total": 4, "loss": 0.5829391479492188, "time": 1792555062.8280356}
+{"event": "target_refresh", "epoch": 2, "step": 1, "total": 4}
+{"event": "target_refresh", "epoch": 2, "step": 4, "total": 4}
+{"event": "training", "encoder_mode": "fullft", "stage": "M", "stage_epoch": 1, "epoch": 2, "step": 1, "total": 4, "loss": 1.3074901103973389, "time": 1792555109.6227555}
+{"event": "training", "encoder_mode": "fullft", "stage": "M", "stage_epoch": 1, "epoch": 2, "step": 4, "total": 4, "loss": 1.1137803792953491, "time": 1792555111.2635784}
+{"event": "target_refresh", "epoch": 3, "step": 1, "total": 4}
+{"event": "target_refresh", "epoch": 3, "step": 4, "total": 4}
+{"event": "training", "encoder_mode": "fullft", "stage": "C", "stage_epoch": 1, "epoch": 3, "step": 1, "total": 4, "loss": 1.0852330923080444, "time": 1792555143.298251}
+{"event": "training", "encoder_mode": "fullft", "stage": "C", "stage_epoch": 1, "epoch": 3, "step": 4, "total": 4, "loss": 0.935581624507904, "time": 1792555144.9550874}

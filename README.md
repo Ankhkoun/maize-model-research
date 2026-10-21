@@ -2,6 +2,10 @@
 
 本仓库是玉米遥感时序语义分割与模型创新的主论文代码仓库。它保存代码、配置、数据划分清单、实验索引和研究决策，不保存遥感原始数据、处理后数据、伪标签、模型权重或完整推理结果。
 
+## MoE × GMM fresh-ft-v3
+
+[原始AgriFM初始化、冻结/全量微调两组代码与模型架构](experiments/moe_gmm_fresh_ft_v3/README.md)位于 `experiments/moe_gmm_fresh_ft_v3/`。仅seed42，重新执行CE预热→GMM监督MoE预热→联合后验训练；工程验收通过，正式训练已启动，最终CDL结果尚未完成。
+
 ## USA B1-repro-K4
 
 [B1-repro-K4模型与训练代码](baselines/b1_repro_k4/README.md)位于`baselines/b1_repro_k4/`，包含AgriFM编码器、NativeFPN解码器、时序可靠性专家和训练配置。进入该目录后按README准备环境、数据并启动训练。

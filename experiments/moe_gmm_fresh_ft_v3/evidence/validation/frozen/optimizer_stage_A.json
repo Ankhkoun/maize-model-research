@@ -1,0 +1,13 @@
+{
+  "counts": {
+    "encoder": 0,
+    "decoder": 689666,
+    "reliability": 0
+  },
+  "learning_rates": {
+    "encoder": 1e-05,
+    "decoder": 0.00015,
+    "reliability": 0.0001
+  },
+  "reset": true
+}

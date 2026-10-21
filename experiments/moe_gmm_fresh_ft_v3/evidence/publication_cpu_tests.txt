@@ -1,0 +1,17 @@
+test_all_invalid_is_finite (test_v2.Contracts.test_all_invalid_is_finite) ... ok
+test_bce_detached_target_and_finite_gradient (test_v2.Contracts.test_bce_detached_target_and_finite_gradient) ... ok
+test_configuration_rejects_silent_knobs (test_v2.Contracts.test_configuration_rejects_silent_knobs) ... ok
+test_density_matches_original (test_v2.Contracts.test_density_matches_original) ... ok
+test_early_stopping_and_top3 (test_v2.Contracts.test_early_stopping_and_top3) ... ok
+test_equal_loss_has_no_position_rank (test_v2.Contracts.test_equal_loss_has_no_position_rank) ... ok
+test_formula_and_controls (test_v2.Contracts.test_formula_and_controls) ... ok
+test_full_schedule_and_preheat_targets (test_v2.Contracts.test_full_schedule_and_preheat_targets) ... ok
+test_no_observations_use_unit_ce_and_skip_bce (test_v2.Contracts.test_no_observations_use_unit_ce_and_skip_bce) ... ok
+test_target_source_detach_and_ema (test_v2.Contracts.test_target_source_detach_and_ema) ... ok
+test_unavailable_uses_prior_and_permutation (test_v2.Contracts.test_unavailable_uses_prior_and_permutation) ... ok
+test_weight_parameters_and_no_gradient_to_prior (test_v2.Contracts.test_weight_parameters_and_no_gradient_to_prior) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.235s
+
+OK

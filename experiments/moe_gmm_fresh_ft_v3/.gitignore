@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+code/weights/
+code/protocol_assets/
+code/runs/
+code/logs/
+code/outputs/
+code/native30m/
+code/validation/
+code/jobs.json
+code/freeze_manifest.json
+*.pt
+*.pth
+*.npz
+*.npy

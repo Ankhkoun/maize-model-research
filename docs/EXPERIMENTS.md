@@ -460,3 +460,9 @@ All Validation rows are the independent replay of each frozen `best.pt` on the s
 ## 2026-10-19：USA B1-repro-K4历史实验代码归档
 
 实验ID：`USA-A4-Ablation-B1-Repro-K4-Seed42-20261012`。代码：`baselines/b1_repro_k4/`。seed42，K=4，A3→M3→J3，单GPU micro batch=1、累积8步、BF16；GMM40、EMA=.95，FiLM/残差/phase/weighted CE关闭。历史GTdev Derived85 mIoU=`0.8791804512971124`，CDL Native30m mIoU=`0.8774247062503876`。两种评估网格不同，不可混为同一指标。完整协议、样本数、checkpoint hash与版本对应关系见子项目文档。本条登记既有实验来源与代码发布，不代表新训练或重新测试。
+
+## 2026-10-21：USA MoE-GMM fresh-ft-v3 发布与启动登记
+
+实验ID：`USA-MoE-GMM-Fresh-Frozen-vs-FullFT-v3-20261021`；代码与配置：`experiments/moe_gmm_fresh_ft_v3/code/`；发布commit为本条记录所在提交。仅seed42，原始AgriFM权重+随机任务模块；joint_frozen与joint_fullft。Train1296/GTdev60/Test500，原生30m测试1959211个有效像元，固定阈值0.5。A/M/C最多10/10/30、至少3/3/8轮；BF16、micro1、累积8。初始化、损失与停止规则见子目录文档。
+
+12项CPU合同与真实GPU验收1336973通过；正式训练1336991已启动，发布只读核验时两组仍运行且均进入M阶段。输出保留于n16r4专属 `usa_moe_gmm_fresh_ft_v3_20261021/runs/`，不提交到Git；冻结1336992、测试1336993、汇总1336994等待依赖。本条没有最终GTdev/CDL指标，不声称收敛或提升；不把V2续训成绩计入V3。发布不启动或修改GPU任务。

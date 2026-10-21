@@ -1,0 +1,122 @@
+{
+  "passed": true,
+  "encoder_mode": "frozen",
+  "initial_model_sha256": "f047edf31710b3bc44b490963cc9eeaf2db182e0e82e28eaa3cd5e4f2029efbb",
+  "stages": [
+    {
+      "stage": "A",
+      "steps": 4,
+      "encoder_changed": false,
+      "encoder_gradient": {
+        "patch_embed": {
+          "trainable": 0,
+          "grad_norm": 0.0
+        },
+        "swin_0": {
+          "trainable": 0,
+          "grad_norm": 0.0
+        },
+        "swin_1": {
+          "trainable": 0,
+          "grad_norm": 0.0
+        },
+        "swin_2": {
+          "trainable": 0,
+          "grad_norm": 0.0
+        },
+        "swin_3": {
+          "trainable": 0,
+          "grad_norm": 0.0
+        }
+      },
+      "peak_allocated_gib": 2.406571388244629,
+      "bank": {
+        "moe_target": null,
+        "samples": 0
+      }
+    },
+    {
+      "stage": "M",
+      "steps": 4,
+      "encoder_changed": false,
+      "encoder_gradient": {
+        "patch_embed": {
+          "trainable": 0,
+          "grad_norm": 0.0
+        },
+        "swin_0": {
+          "trainable": 0,
+          "grad_norm": 0.0
+        },
+        "swin_1": {
+          "trainable": 0,
+          "grad_norm": 0.0
+        },
+        "swin_2": {
+          "trainable": 0,
+          "grad_norm": 0.0
+        },
+        "swin_3": {
+          "trainable": 0,
+          "grad_norm": 0.0
+        }
+      },
+      "peak_allocated_gib": 6.207402229309082,
+      "bank": {
+        "samples": 4,
+        "eligible_patches": 45695,
+        "gmm_patches": 45695,
+        "fused_absolute_difference": 0.07365196291357279,
+        "seconds": 15.571093559265137,
+        "eligible_without_direct_observation": 0,
+        "moe_target": "gmm",
+        "target_ema": 0.0,
+        "test_records_loaded": 0,
+        "source": "unaugmented Train ordinary CE; same snapshot MoE; raw Gaussian PDFs",
+        "fallback": "unavailable GMM: qstar=r; GMM CE unit weight; BCE skipped; no rank"
+      }
+    },
+    {
+      "stage": "C",
+      "steps": 4,
+      "encoder_changed": false,
+      "encoder_gradient": {
+        "patch_embed": {
+          "trainable": 0,
+          "grad_norm": 0.0
+        },
+        "swin_0": {
+          "trainable": 0,
+          "grad_norm": 0.0
+        },
+        "swin_1": {
+          "trainable": 0,
+          "grad_norm": 0.0
+        },
+        "swin_2": {
+          "trainable": 0,
+          "grad_norm": 0.0
+        },
+        "swin_3": {
+          "trainable": 0,
+          "grad_norm": 0.0
+        }
+      },
+      "peak_allocated_gib": 6.209424018859863,
+      "bank": {
+        "samples": 4,
+        "eligible_patches": 45695,
+        "gmm_patches": 45695,
+        "fused_absolute_difference": 0.0497875576838851,
+        "seconds": 15.660529136657715,
+        "eligible_without_direct_observation": 0,
+        "moe_target": "joint",
+        "target_ema": 0.0,
+        "test_records_loaded": 0,
+        "source": "unaugmented Train ordinary CE; same snapshot MoE; raw Gaussian PDFs",
+        "fallback": "unavailable GMM: qstar=r; GMM CE unit weight; BCE skipped; no rank"
+      }
+    }
+  ],
+  "test_records_loaded": 0
+}

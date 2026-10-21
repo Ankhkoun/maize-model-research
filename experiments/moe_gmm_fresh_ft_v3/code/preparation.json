@@ -1,0 +1,15 @@
+{
+  "initialization": "pretrained encoder + fresh random decoder/MoE",
+  "task_checkpoint_loaded": false,
+  "pretrained_sha256": "3a8f4b43f466933c5607916c48f8cf9f17230f449f09e4efb7790ece3278d6a8",
+  "source_files": 29,
+  "test_records_loaded": 0,
+  "seeds": [
+    42
+  ],
+  "modes": [
+    "frozen",
+    "fullft"
+  ],
+  "max_concurrent_gpus": 2
+}

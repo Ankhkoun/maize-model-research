@@ -1,0 +1,19 @@
+{
+  "checked_at_asia_shanghai": "2026-10-21T13:09:44.731172+08:00",
+  "python": "3.13.5 | packaged by Anaconda, Inc. | (main, Jun 12 2025, 16:37:03) [MSC v.1929 64 bit (AMD64)]",
+  "torch": "2.10.0+cpu",
+  "cpu_contract_tests": 12,
+  "cpu_tests_passed": true,
+  "python_files_parsed": 25,
+  "configs_validated": [
+    "joint_frozen_seed42.yaml",
+    "joint_fullft_seed42.yaml"
+  ],
+  "local_markdown_links_valid": true,
+  "sealed_source_files": 29,
+  "matches_remote_running_source": true,
+  "task_checkpoint_loaded": false,
+  "gpu_evidence": "historical real GPU validation 1336973; not rerun during GitHub publication",
+  "training_state": "two running jobs, not completed; CDL pending dependency",
+  "large_training_assets_included": false
+}
