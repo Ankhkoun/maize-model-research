@@ -1,0 +1,25 @@
+{
+  "paths": {
+    "run_dir": "../outputs/weak_mix_lambda025",
+    "protocol_assets": "../data/protocol",
+    "pretrained": "../weights/AgriFM.pth",
+    "agrifm_source": "../third_party/AgriFM",
+    "cubes": "../data/cubes",
+    "pseudo_labels": "../data/pseudo_labels",
+    "dev_labels_30m": "../data/dev_labels_30m",
+    "dev_labels_10m": "../data/dev_labels_10m",
+    "test_cdl": "../data/reference/2021_30m_cdls.tif",
+    "teacher_run_dir": "../outputs/shared_d_teacher"
+  },
+  "seed": 42,
+  "source_pretrained_sha256": "3a8f4b43f466933c5607916c48f8cf9f17230f449f09e4efb7790ece3278d6a8",
+  "source_video_swin_sha256": "c7305dd2069e0c8c77874acd026a8321ef402b2df1a8be082047c53c79a568fc",
+  "protocol_hashes": {
+    "train_validation500.csv": "66ce0fc4dd3c95c106133f10547364400d6e7bbade0b6943991444025a9e21d4",
+    "test500.csv": "1dd0984d9bdff4a580ff5db44a0a276f65c45ad853f0b85e3a8a7480baf6aaa3",
+    "gtdev60.csv": "bdbc4927798889fc4fa8ee497962f14cc405d228a4ad9582274e306c0fec0e0f",
+    "normalization_train1296.json": "e0b61bef8e7672397062c4edcaa793f75ab8bdc7f4b78cb6f62e2c5580fe514b"
+  },
+  "experiment_id": "weak_mix_lambda025",
+  "weak_label_weight": 0.25
+}
